@@ -31,7 +31,7 @@ class NodeData extends Component{
             axios.delete(process.env.REACT_APP_API_URL + '/node/' + id + '/delete')
             .then(res=>{
                 console.log(res);
-                //window.location = "/nodes";
+                window.location = "/nodes";
             })
             .catch(err=>console.log(err))
         }

@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import NodeListItem from "./NodeListItem";
 
 class ControlPointData extends Component{
     constructor(props){
@@ -11,6 +12,27 @@ class ControlPointData extends Component{
             record: {},
             allNodes: []
         };
+
+        this.getNodeData = this.getNodeData.bind(this);
+    }
+
+    getNodeData(nodeId){
+        let nodes = this.state.allNodes;
+        axios.get('http://' + this.state.record.IpAddress + '/nodeData?nodeId=' + nodeId)
+        .then(res=>{
+            console.log(res);
+            for(var i = 0; i < nodes.length; i++){
+                var node = nodes[i];
+
+                if(node.Id === nodeId){
+                    node.details = res.data;
+                    nodes[i] = node;
+                }
+            }
+
+            this.setState({allNodes: nodes});
+        })
+        .catch(err=>console.log(err))
     }
 
     componentDidMount(){
@@ -39,7 +61,7 @@ class ControlPointData extends Component{
             <ul>
                 {this.state.allNodes.map((node) => (
                     <li key={node.Id}>
-                        <Link className="App-link" to={`/node/${node.Id}`}>{node.Name}</Link>
+                        <NodeListItem getNodeData={this.getNodeData} Id={node.Id} Name={node.Name} details={node.details} />
                     </li>
                 ))}
             </ul>
