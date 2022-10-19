@@ -23,7 +23,7 @@ class Nodes extends Component{
     render(){
         return (
             <>
-            <h3>Nodes</h3>
+            <h2>Nodes</h2>
             <ul>
                 {this.state.allNodes.map((node) => (
                     <li key={node.Id}>

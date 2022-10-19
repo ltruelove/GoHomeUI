@@ -124,6 +124,7 @@ class NodeData extends Component{
     render(){
         return (
             <>
+            <h2>Node Details</h2>
             <p>PIN: <input onChange={this.handlePIN} type="password" id="requestPIN" /></p>
             <p>Name: {this.state.record.Name}</p>
             <p>IP Address: {this.state.record.IpAddress}</p>
@@ -132,10 +133,12 @@ class NodeData extends Component{
             <button onClick={() => this.getNodeData(this.state.recordId)}>Refresh</button>
             <br />
             
+            <h2>Node Sensors</h2>
             {this.state.allSensors.map((sensor) => (
                 this.displaySensorData(sensor)
             ))}
 
+            <h2>Node Switches</h2>
             {this.state.allSwitches.map((nodeSwitch) => (
                 this.displaySwitchData(nodeSwitch)
             ))}
