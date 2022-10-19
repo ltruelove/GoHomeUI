@@ -7,7 +7,6 @@ export default function ControlPoints(){
 
     return (
         <>
-        <h3>Node for ID: {id}</h3>
         <NodeData id={id} />
         </>
     )

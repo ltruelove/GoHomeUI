@@ -18,6 +18,7 @@ class NodeData extends Component{
         this.getNodeData = this.getNodeData.bind(this);
         this.handlePIN = this.handlePIN.bind(this);
         this.toggleButton = this.toggleButton.bind(this);
+        this.pressMomentary = this.pressMomentary.bind(this);
     }
 
     handlePIN = event => {
@@ -35,6 +36,23 @@ class NodeData extends Component{
     toggleButton(switchId){
         const requestBody = JSON.stringify({"pinCode" : this.state.pin});
         const url = process.env.REACT_APP_API_URL + '/node/switch/toggle/' + switchId;
+        let id = this.state.recordId;
+
+        axios.post(url, requestBody)
+        .then(res=>{
+            console.log(res);
+            this.setState({data: res.data}, () => {
+                setTimeout(() => {
+                    this.getNodeData(id);
+                }, 100);
+            });
+        })
+        .catch(err=>alert(err.response.data))
+    }
+
+    pressMomentary(switchId){
+        const requestBody = JSON.stringify({"pinCode" : this.state.pin});
+        const url = process.env.REACT_APP_API_URL + '/node/switch/press/' + switchId;
         let id = this.state.recordId;
 
         axios.post(url, requestBody)
@@ -103,18 +121,21 @@ class NodeData extends Component{
     }
 
     displaySwitchData(nodeSwitch){
+        console.log(nodeSwitch);
         if(!this.state.data){
             return;
         }
 
         switch(nodeSwitch.SwitchTypeId){
             case 1:
-                return <div key={nodeSwitch.Id}>{nodeSwitch.Name}</div>
+                return <div key={nodeSwitch.Id}>
+                    <button onClick={() => this.pressMomentary(nodeSwitch.Id)}>Press {nodeSwitch.Name} Switch</button>
+                    &nbsp; for {nodeSwitch.MomentaryPressDuration} milliseconds
+                </div>
             case 2:
                 return <div key={nodeSwitch.Id}>
-                    <p>{nodeSwitch.Name}</p>
-                    <p>Toggle Closed: {this.state.data.IsClosed ? "Yes":"No"}</p>
-                    <button onClick={() => this.toggleButton(nodeSwitch.Id)}>Toggle Button</button>
+                    <p>Circuit Closed: {this.state.data.IsClosed ? "Yes":"No"}</p>
+                    <button onClick={() => this.toggleButton(nodeSwitch.Id)}>Toggle {nodeSwitch.Name} Switch</button>
                 </div>
             default:
                 return <p div key={nodeSwitch.Id}>Invalid Input</p>
@@ -124,8 +145,8 @@ class NodeData extends Component{
     render(){
         return (
             <>
-            <h2>Node Details</h2>
             <p>PIN: <input onChange={this.handlePIN} type="password" id="requestPIN" /></p>
+            <h2>Node Details</h2>
             <p>Name: {this.state.record.Name}</p>
             <p>IP Address: {this.state.record.IpAddress}</p>
             <p>MAC Address: {this.state.record.Mac}</p>

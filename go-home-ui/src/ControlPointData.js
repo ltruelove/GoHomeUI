@@ -14,6 +14,7 @@ class ControlPointData extends Component{
         };
 
         this.getNodeData = this.getNodeData.bind(this);
+        this.deleteControlPointClick = this.deleteControlPointClick.bind(this);
     }
 
     getNodeData(nodeId){
@@ -51,12 +52,27 @@ class ControlPointData extends Component{
         .catch(err=>console.log(err))
     }
 
+    deleteControlPointClick(event) {
+        const id = event.target.id;
+        console.log(id);
+
+        if(window.confirm("Are you sure you want to delete this control point?")){
+            axios.delete(process.env.REACT_APP_API_URL + '/controlPoint/' + id + '/delete')
+            .then(res=>{
+                console.log(res);
+                window.location = "/controlPoints";
+            })
+            .catch(err=>console.log(err))
+        }
+    }
+
     render(){
         return (
             <>
             <p>Name: {this.state.record.Name}</p>
             <p>IP Address: {this.state.record.IpAddress}</p>
             <p>MAC Address: {this.state.record.Mac}</p>
+            <button id={this.props.id} onClick={this.deleteControlPointClick}>Delete</button>
             <h3>Nodes</h3>
             <ul>
                 {this.state.allNodes.map((node) => (

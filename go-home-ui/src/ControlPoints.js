@@ -14,7 +14,9 @@ class ControlPoints extends Component{
         axios.get(process.env.REACT_APP_API_URL + '/controlPoint')
         .then(res=>{
             console.log(res.data);
-            this.setState({allPoints: res.data})
+            if(res.data){
+                this.setState({allPoints: res.data})
+            }
         })
         .catch(err=>console.log(err))
     }
