@@ -32,9 +32,9 @@ class NodeData extends Component{
         .catch(err=>console.log(err))
     }
 
-    toggleButton(){
+    toggleButton(switchId){
         const requestBody = JSON.stringify({"pinCode" : this.state.pin});
-        const url = process.env.REACT_APP_API_URL + '/node/switch/toggle/' + this.state.recordId;
+        const url = process.env.REACT_APP_API_URL + '/node/switch/toggle/' + switchId;
         let id = this.state.recordId;
 
         axios.post(url, requestBody)
@@ -46,14 +46,18 @@ class NodeData extends Component{
                 }, 100);
             });
         })
-        .catch(err=>console.log(err))
+        .catch(err=>alert(err.response.data))
     }
 
     componentDidMount(){
         axios.get(process.env.REACT_APP_API_URL + '/node/' + this.state.recordId)
         .then(res=>{
             console.log(res);
-            this.setState({record: res.data}, () => {
+            this.setState({
+                record: res.data,
+                allSensors: res.data.sensors,
+                allSwitches: res.data.switches
+            }, () => {
                 this.getNodeData(res.data.Id);
             })
         })
@@ -74,32 +78,67 @@ class NodeData extends Component{
         }
     }
 
-    render(){
-        let data = <></>;
-
-        if(this.state.data){
-            data = <>
-                <p>Humidity: {this.state.data.Humidity}</p>
-                <p>Temperature F: {this.state.data.TemperatureF}</p>
-                <p>Temperature C: {this.state.data.TemperatureC}</p>
-                <p>Moisture: {this.state.data.Moisture}</p>
-                <p>Resistor Value: {this.state.data.ResistorValue}</p>
-                <p>Toggle Closed: {this.state.data.IsClosed ? "Yes":"No"}</p>
-                </>
+    displaySensorData(sensor){
+        if(!this.state.data){
+            return;
         }
 
+        switch(sensor.SensorTypeId){
+            case 1:
+                return <div key={sensor.Id}>
+                    <p>{sensor.Name}</p>
+                    <p>Humidity: {this.state.data.Humidity}</p>
+                    <p>Temperature F: {this.state.data.TemperatureF}</p>
+                    <p>Temperature C: {this.state.data.TemperatureC}</p>
+                </div>
+            case 2:
+                return <p key={sensor.Id}>{sensor.Name}: {this.state.data.Moisture}</p>
+            case 3:
+                return <p key={sensor.Id}>{sensor.Name}: {this.state.data.Magnetic}</p>
+            case 4:
+                return <p key={sensor.Id}>{sensor.Name}: {this.state.data.ResistorValue}</p>
+            default:
+                return <p div key={sensor.Id}>Invalid Input</p>
+        }
+    }
+
+    displaySwitchData(nodeSwitch){
+        if(!this.state.data){
+            return;
+        }
+
+        switch(nodeSwitch.SwitchTypeId){
+            case 1:
+                return <div key={nodeSwitch.Id}>{nodeSwitch.Name}</div>
+            case 2:
+                return <div key={nodeSwitch.Id}>
+                    <p>{nodeSwitch.Name}</p>
+                    <p>Toggle Closed: {this.state.data.IsClosed ? "Yes":"No"}</p>
+                    <button onClick={() => this.toggleButton(nodeSwitch.Id)}>Toggle Button</button>
+                </div>
+            default:
+                return <p div key={nodeSwitch.Id}>Invalid Input</p>
+        }
+    }
+
+    render(){
         return (
             <>
+            <p>PIN: <input onChange={this.handlePIN} type="password" id="requestPIN" /></p>
             <p>Name: {this.state.record.Name}</p>
             <p>IP Address: {this.state.record.IpAddress}</p>
             <p>MAC Address: {this.state.record.Mac}</p>
-            {data}
             <button id={this.props.id} onClick={this.deleteNodeClick}>Delete</button>
-            <button onClick={() => this.getNodeData(this.state.recordId)}>Details</button>
+            <button onClick={() => this.getNodeData(this.state.recordId)}>Refresh</button>
             <br />
-            <p>PIN: <input onChange={this.handlePIN} type="password" id="requestPIN" /></p>
             
-            <button onClick={this.toggleButton}>Toggle Button</button>
+            {this.state.allSensors.map((sensor) => (
+                this.displaySensorData(sensor)
+            ))}
+
+            {this.state.allSwitches.map((nodeSwitch) => (
+                this.displaySwitchData(nodeSwitch)
+            ))}
             </>
         )
     }
