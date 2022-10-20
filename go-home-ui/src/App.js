@@ -6,6 +6,9 @@ import ControlPoint from './ControlPoint';
 import Nodes from './Nodes';
 import Node from './Node';
 import Nav from './Nav';
+import Views from './Views';
+import CreateView from './CreateView';
+import EditView from './EditView';
 
 export default function App(){
   return (
@@ -28,6 +31,9 @@ export default function App(){
               <Route path="controlPoint/:id" element={<ControlPoint />} />
               <Route path="nodes" element={<Nodes />} />
               <Route path="node/:id" element={<Node />} />
+              <Route path="views" element={<Views />} />
+              <Route path="view/create" element={<CreateView />} />
+              <Route path="view/:id" element={<EditView />} />
             </Routes>
           </div>
         </div>

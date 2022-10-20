@@ -14,7 +14,7 @@ class Nodes extends Component{
         axios.get(process.env.REACT_APP_API_URL + '/node')
         .then(res=>{
             if(res.data){
-                this.setState({allNodes: res.data})
+                this.setState({allNodes: res.data ? res.data : []})
             }
         })
         .catch(err=>console.log(err))
