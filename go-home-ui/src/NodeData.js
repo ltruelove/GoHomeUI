@@ -28,15 +28,11 @@ class NodeData extends Component{
     getNodeData(mac){
         axios.get('http://' + this.state.record.controlPointIp + '/triggerUpdate?mac=' + mac)
         .then(res=>{
-            this.setState({data: res.data});
-
-            setTimeout(() => {
-                axios.get('http://' + this.state.record.controlPointIp + '/nodeData?nodeId=' + this.state.recordId)
-                .then(res=>{
-                    this.setState({data: res.data});
-                })
-                .catch(err=>console.log(err))
-            }, 100);
+            axios.get('http://' + this.state.record.controlPointIp + '/nodeData?nodeId=' + this.state.recordId)
+            .then(res=>{
+                this.setState({data: res.data});
+            })
+            .catch(err=>console.log(err))
         })
         .catch(err=>console.log(err))
     }
@@ -137,8 +133,8 @@ class NodeData extends Component{
                 </div>
             case 2:
                 return <div key={nodeSwitch.Id}>
-                    <p>Circuit Closed: {this.state.data.IsClosed ? "Yes":"No"}</p>
                     <button onClick={() => this.toggleButton(nodeSwitch.Id)}>Toggle {nodeSwitch.Name} Switch</button>
+                    &nbsp; (Circuit is {this.state.data.IsClosed ? "closed":"open"})
                 </div>
             default:
                 return <p div key={nodeSwitch.Id}>Invalid Input</p>
