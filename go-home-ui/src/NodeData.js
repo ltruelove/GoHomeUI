@@ -40,7 +40,7 @@ class NodeData extends Component{
     toggleButton(switchId){
         const requestBody = JSON.stringify({"pinCode" : this.state.pin});
         const url = process.env.REACT_APP_API_URL + '/node/switch/toggle/' + switchId;
-        let mac = this.state.data.Mac;
+        let mac = this.state.record.Mac;
 
         axios.post(url, requestBody)
         .then(res=>{
@@ -56,7 +56,7 @@ class NodeData extends Component{
     pressMomentary(switchId){
         const requestBody = JSON.stringify({"pinCode" : this.state.pin});
         const url = process.env.REACT_APP_API_URL + '/node/switch/press/' + switchId;
-        let mac = this.state.Mac;
+        let mac = this.state.record.Mac;
 
         axios.post(url, requestBody)
         .then(res=>{
@@ -150,7 +150,7 @@ class NodeData extends Component{
             <p>IP Address: {this.state.record.IpAddress}</p>
             <p>MAC Address: {this.state.record.Mac}</p>
             <button id={this.props.id} onClick={this.deleteNodeClick}>Delete</button>
-            <button onClick={() => this.getNodeData(this.state.data.Mac)}>Refresh</button>
+            <button onClick={() => this.getNodeData(this.state.record.Mac)}>Refresh</button>
             <br />
             
             <h2>Node Sensors</h2>
