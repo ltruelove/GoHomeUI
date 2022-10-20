@@ -25,10 +25,18 @@ class NodeData extends Component{
         this.setState({ pin: event.target.value });
     };
 
-    getNodeData(nodeId){
-        axios.get('http://' + this.state.record.controlPointIp + '/nodeData?nodeId=' + nodeId)
+    getNodeData(mac){
+        axios.get('http://' + this.state.record.controlPointIp + '/triggerUpdate?mac=' + mac)
         .then(res=>{
             this.setState({data: res.data});
+
+            setTimeout(() => {
+                axios.get('http://' + this.state.record.controlPointIp + '/nodeData?nodeId=' + this.state.recordId)
+                .then(res=>{
+                    this.setState({data: res.data});
+                })
+                .catch(err=>console.log(err))
+            }, 100);
         })
         .catch(err=>console.log(err))
     }
@@ -36,14 +44,13 @@ class NodeData extends Component{
     toggleButton(switchId){
         const requestBody = JSON.stringify({"pinCode" : this.state.pin});
         const url = process.env.REACT_APP_API_URL + '/node/switch/toggle/' + switchId;
-        let id = this.state.recordId;
+        let mac = this.state.data.Mac;
 
         axios.post(url, requestBody)
         .then(res=>{
-            console.log(res);
             this.setState({data: res.data}, () => {
                 setTimeout(() => {
-                    this.getNodeData(id);
+                    this.getNodeData(mac);
                 }, 100);
             });
         })
@@ -53,14 +60,13 @@ class NodeData extends Component{
     pressMomentary(switchId){
         const requestBody = JSON.stringify({"pinCode" : this.state.pin});
         const url = process.env.REACT_APP_API_URL + '/node/switch/press/' + switchId;
-        let id = this.state.recordId;
+        let mac = this.state.Mac;
 
         axios.post(url, requestBody)
         .then(res=>{
-            console.log(res);
             this.setState({data: res.data}, () => {
                 setTimeout(() => {
-                    this.getNodeData(id);
+                    this.getNodeData(mac);
                 }, 100);
             });
         })
@@ -70,13 +76,12 @@ class NodeData extends Component{
     componentDidMount(){
         axios.get(process.env.REACT_APP_API_URL + '/node/' + this.state.recordId)
         .then(res=>{
-            console.log(res);
             this.setState({
                 record: res.data,
-                allSensors: res.data.sensors,
-                allSwitches: res.data.switches
+                allSensors: res.data.sensors ? res.data.sensors : [],
+                allSwitches: res.data.switches ? res.data.switches : []
             }, () => {
-                this.getNodeData(res.data.Id);
+                this.getNodeData(res.data.Mac);
             })
         })
         .catch(err=>console.log(err))
@@ -84,7 +89,6 @@ class NodeData extends Component{
 
     deleteNode(event) {
         const id = event.target.id;
-        console.log(id);
 
         if(window.confirm("Are you sure you want to delete this node?")){
             axios.delete(process.env.REACT_APP_API_URL + '/node/' + id + '/delete')
@@ -121,7 +125,6 @@ class NodeData extends Component{
     }
 
     displaySwitchData(nodeSwitch){
-        console.log(nodeSwitch);
         if(!this.state.data){
             return;
         }
@@ -151,7 +154,7 @@ class NodeData extends Component{
             <p>IP Address: {this.state.record.IpAddress}</p>
             <p>MAC Address: {this.state.record.Mac}</p>
             <button id={this.props.id} onClick={this.deleteNodeClick}>Delete</button>
-            <button onClick={() => this.getNodeData(this.state.recordId)}>Refresh</button>
+            <button onClick={() => this.getNodeData(this.state.data.Mac)}>Refresh</button>
             <br />
             
             <h2>Node Sensors</h2>
