@@ -86,8 +86,18 @@ export default function EditView(){
         .catch(err=>alert(err.response.data))
     }
 
-    const test = () => {
-        console.log("test");
+    const saveClicked = () => {
+        let thisView = {
+            Id: parseInt(id),
+            Name: name
+        }
+
+        axios.put(process.env.REACT_APP_API_URL + '/view', thisView)
+        .then(res=>{
+            console.log(res);
+            fetchViewData();
+        })
+        .catch(err=>alert(err.response.data))
     }
 
     useEffect(() => {
@@ -103,6 +113,9 @@ export default function EditView(){
             value={name}
             onChange={event => setName(event.target.value)}
         /></p>
+        <button onClick={saveClicked}>Save</button>
+        <br />
+        <br />
         <h2>Sensors</h2>
         <button onClick={() => {setShowSensorModal(true);}}>Add A Sensor</button>
         <br />
