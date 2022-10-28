@@ -1,10 +1,10 @@
 import React,{useEffect, useState} from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import ReactModal from "react-modal";
-import NodeSensorList from "./NodeSensorList";
-import NodeSwitchList from "./NodeSwitchList";
 import { useNavigate } from "react-router-dom";
+import ReactModal from "react-modal";
+import NodeSensorList from "../../Components/Node/NodeSensorList";
+import NodeSwitchList from "../../Components/Node/NodeSwitchList";
 
 export default function EditView(){
     const navigate = useNavigate();

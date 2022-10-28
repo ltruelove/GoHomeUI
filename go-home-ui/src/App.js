@@ -1,15 +1,15 @@
 import React from 'react';
 import {Route, Routes, BrowserRouter} from "react-router-dom";
 import Home from './Home';
-import ControlPoints from './ControlPoints';
-import ControlPoint from './ControlPoint';
-import Nodes from './Nodes';
-import Node from './Node';
+import ControlPoints from './Pages/ControlPoint/ControlPoints';
+import ControlPoint from './Pages/ControlPoint/ControlPoint';
+import Nodes from './Pages/Node/Nodes';
+import Node from './Pages/Node/Node';
 import Nav from './Nav';
-import Views from './Views';
-import CreateView from './CreateView';
-import EditView from './EditView';
-import ViewDetail from './ViewDetail';
+import Views from './Pages/View/Views';
+import CreateView from './Pages/View/CreateView';
+import EditView from './Pages/View/EditView';
+import ViewDetail from './Pages/View/ViewDetail';
 
 export default function App(){
   return (

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import TempHumidity from "./TempHumidity";
+import TempHumidity from "../View/TempHumidity";
 import { useNavigate } from "react-router-dom";
 
 export default function NodeData(props){

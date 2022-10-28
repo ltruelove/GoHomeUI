@@ -1,13 +1,14 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import NodeData from "./NodeData";
+import ControlPointData from "../../Components/ControlPoint/ControlPointData";
 
 export default function ControlPoints(){
     let { id } = useParams();
 
     return (
         <>
-        <NodeData id={id} />
+        <h3>Control Point for ID: {id}</h3>
+        <ControlPointData id={id} />
         </>
     )
 }
