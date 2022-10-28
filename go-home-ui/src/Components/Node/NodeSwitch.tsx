@@ -1,13 +1,14 @@
 import React, {useState} from "react";
 import axios from "axios";
+import { NodeSwitchVM } from "../../Models/NodeSwitchVM";
 
 export default function NodeSwitch(props) {
     props.nodeSwitch.label = "";
     props.nodeSwitch.ViewId = parseInt(props.viewId);
 
-    const [nodeSwitch, setNodeSwitch] = useState(props.nodeSwitch);
-    const [labelValid, setLabelValid] = useState(false);
-    const [id, setId] = useState(0);
+    const [nodeSwitch, setNodeSwitch] = useState<NodeSwitchVM>(props.nodeSwitch);
+    const [labelValid, setLabelValid] = useState<boolean>(false);
+    const [id, setId] = useState<number>(0);
 
     const addSelected = () => {
         let nodeSwitchData = {
@@ -20,7 +21,6 @@ export default function NodeSwitch(props) {
 
         axios.post(process.env.REACT_APP_API_URL + '/view/node/switch', nodeSwitchData)
         .then(res=>{
-            console.log(res.data);
             setId(res.data.Id);
         })
         .catch(err=>alert(err.response.data))
@@ -42,12 +42,12 @@ export default function NodeSwitch(props) {
         }
     }
 
-    const checkboxChanged = (event) =>{
-        setNodeSwitch({...nodeSwitch, isChecked: event.target.checked});
-        toggleSelectSwitch(event, nodeSwitch);
+    const checkboxChanged = (event: React.ChangeEvent<HTMLInputElement>) =>{
+        setNodeSwitch({...nodeSwitch, IsChecked: event.target.checked});
+        toggleSelectSwitch(event);
     }
 
-    const labelChanged = (event) => {
+    const labelChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
         let valid = false;
         let label = event.target.value;
 
@@ -64,7 +64,7 @@ export default function NodeSwitch(props) {
             Name: {nodeSwitch.Name}, Type: {nodeSwitch.SwitchTypeName}, Pin: {nodeSwitch.Pin}
             &nbsp;- <label>
                 Label&nbsp;
-                <input type="text" id={"label" + nodeSwitch.Id} disabled={nodeSwitch.isChecked} value={nodeSwitch.label} onChange={labelChanged} />&nbsp;
+                <input type="text" id={"label" + nodeSwitch.Id} disabled={nodeSwitch.IsChecked} value={nodeSwitch.label} onChange={labelChanged} />&nbsp;
             </label>
             <label>
                 Add to view&nbsp;

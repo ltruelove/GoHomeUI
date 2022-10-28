@@ -1,9 +1,10 @@
 import React,{useEffect, useState} from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { ControlPoint } from "../../Models/ControlPoint";
 
-export default function ControlPoints(props){
-    const [allPoints, setAllPoints] = useState([]);
+export default function ControlPoints(){
+    const [allPoints, setAllPoints] = useState<ControlPoint[]>([]);
 
     useEffect(() => {
         axios.get(process.env.REACT_APP_API_URL + '/controlPoint')

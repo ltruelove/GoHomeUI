@@ -1,15 +1,25 @@
 import React from 'react';
 import {Route, Routes, BrowserRouter} from "react-router-dom";
-import Home from './Home';
-import ControlPoints from './Pages/ControlPoint/ControlPoints';
-import ControlPoint from './Pages/ControlPoint/ControlPoint';
-import Nodes from './Pages/Node/Nodes';
-import Node from './Pages/Node/Node';
-import Nav from './Nav';
-import Views from './Pages/View/Views';
-import CreateView from './Pages/View/CreateView';
-import EditView from './Pages/View/EditView';
-import ViewDetail from './Pages/View/ViewDetail';
+// @ts-ignore
+import Home from './Pages/Home.tsx';
+// @ts-ignore
+import ControlPoints from './Pages/ControlPoint/ControlPoints.tsx';
+// @ts-ignore
+import ControlPoint from './Pages/ControlPoint/ControlPoint.tsx';
+// @ts-ignore
+import Nodes from './Pages/Node/Nodes.tsx';
+// @ts-ignore
+import Node from './Pages/Node/Node.tsx';
+// @ts-ignore
+import Nav from './Nav.tsx';
+// @ts-ignore
+import Views from './Pages/View/Views.tsx';
+// @ts-ignore
+import CreateView from './Pages/View/CreateView.tsx';
+// @ts-ignore
+import EditView from './Pages/View/EditView.tsx';
+// @ts-ignore
+import ViewDetail from './Pages/View/ViewDetail.tsx';
 
 export default function App(){
   return (
@@ -27,7 +37,7 @@ export default function App(){
           </div>
           <div style={{ flex: 1, padding: "10px" }}>
             <Routes>
-              <Route exact path="/" element={<Home />} />
+              <Route path="/" element={<Home />} />
               <Route path="controlPoints" element={<ControlPoints />} />
               <Route path="controlPoint/:id" element={<ControlPoint />} />
               <Route path="nodes" element={<Nodes />} />

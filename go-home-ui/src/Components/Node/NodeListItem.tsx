@@ -1,15 +1,33 @@
 import React, {useState} from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { ControlPoint } from "../../Models/ControlPoint";
+import { NodeData } from "../../Models/NodeData";
 
-export default function NodeListItem(props){
-    const [details, setDetails] = useState({});
+interface NodeListItemProps {
+    Id: number,
+    Name: string,
+    record: ControlPoint
+}
+
+const defaultDetails: NodeData = {
+    Humidity: 0,
+    Moisture: 0,
+    TemperatureF: 0,
+    TemperatureC: 0,
+    IsClosed: false,
+    ResistorValue: 0,
+    nodeId: 0
+}
+
+export default function NodeListItem(props: NodeListItemProps){
+    const [details, setDetails] = useState<NodeData>(defaultDetails);
     const [showDetails, setShowDetails] = useState(false);
     const id = props.Id;
     const name = props.Name;
     const record = props.record;
 
-    const getNodeData = (nodeId) =>{ 
+    const getNodeData = () =>{ 
         axios.get('http://' + record.IpAddress + '/nodeData?nodeId=' + id)
         .then(res=>{
             if(res.data){
@@ -22,7 +40,7 @@ export default function NodeListItem(props){
 
         return (
             <>
-                <Link className="App-link" to={`/node/${id}`}>{name}</Link> - <Link onClick={() => getNodeData(id)} className="App-link">Details</Link>
+                <Link className="App-link" to={`/node/${id}`}>{name}</Link> - <Link to={''} onClick={() => getNodeData()} className="App-link">Details</Link>
                 {showDetails ?
                 <div>
                     <p>Humidity: {details.Humidity}</p>

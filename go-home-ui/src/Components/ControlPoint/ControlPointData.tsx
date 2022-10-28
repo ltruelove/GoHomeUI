@@ -1,19 +1,31 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import NodeListItem from "../Node/NodeListItem";
+// @ts-ignore
+import NodeListItem from "../Node/NodeListItem.tsx";
+import { ControlPoint } from "../../Models/ControlPoint";
+import { ControlPointNode } from "../../Models/ControlPointNode";
 
-export default function ControlPointData(props){
+interface ControlPointDataProps {
+    id: Number
+}
+
+const defaultControlPoint: ControlPoint = {
+    Id: 0,
+    Name: "",
+    IpAddress: "",
+    Mac: ""
+}
+
+export default function ControlPointData(props: ControlPointDataProps){
     const navigate = useNavigate();
     const recordId = props.id;
-    const [record, setRecord] = useState({});
-    const [allNodes, setAllNodes] = useState([]);
+    const [record, setRecord] = useState<ControlPoint>(defaultControlPoint);
+    const [allNodes, setAllNodes] = useState<ControlPointNode[]>([]);
 
-    const deleteControlPoint = (event) => {
-        const id = event.target.id;
-
+    const deleteControlPoint = (event: React.MouseEvent<HTMLButtonElement>) => {
         if(window.confirm("Are you sure you want to delete this control point?")){
-            axios.delete(process.env.REACT_APP_API_URL + '/controlPoint/' + id + '/delete')
+            axios.delete(process.env.REACT_APP_API_URL + '/controlPoint/' + recordId + '/delete')
             .then(res=>{
                 navigate("/controlPoints");
             })
@@ -54,7 +66,7 @@ export default function ControlPointData(props){
         <ul>
             {allNodes.map((node) => (
                 <li key={node.Id}>
-                    <NodeListItem Id={node.Id} Name={node.Name} record={record} details={node.details} />
+                    <NodeListItem Id={node.Id} Name={node.Name} record={record} />
                 </li>
             ))}
         </ul>

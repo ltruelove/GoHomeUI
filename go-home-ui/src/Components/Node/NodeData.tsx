@@ -1,25 +1,52 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import TempHumidity from "../View/TempHumidity";
+// @ts-ignore
+import TempHumidity from "../View/TempHumidity.tsx";
 import { useNavigate } from "react-router-dom";
+import { NodeVM } from "../../Models/NodeVM";
+import { NodeDataModel } from "../../Models/NodeDataModel";
+import { NodeSensorVM } from "../../Models/NodeSensorVM";
+import { NodeSwitchVM } from "../../Models/NodeSwitchVM";
 
-export default function NodeData(props){
+const defaultNodeRecord: NodeVM = {
+    Id: 0,
+    Name: "",
+    Mac: "",
+    controlPointId: 0,
+    controlPointIp: "",
+    controlPointName: "",
+    sensors: [],
+    switches: []
+}
+
+const defaultNodeData: NodeDataModel = {
+    Humidity: 0,
+    Moisture: 0,
+    TemperatureF: 0,
+    TemperatureC: 0,
+    IsClosed: false,
+    ResistorValue: 0,
+    nodeId: 0
+};
+
+interface NodeDataProps {
+    id: number
+}
+
+export default function NodeData(props: NodeDataProps){
     const navigate = useNavigate();
-    const recordId = props.id;
-    const [record, setRecord] = useState({});
-    const [data, setData] = useState();
-    const [allSensors, setAllSensors] = useState([]);
-    const [allSwitches, setAllSwitches] = useState([]);
+    const [record, setRecord] = useState<NodeVM>({...defaultNodeRecord, Id: props.id});
+    const [data, setData] = useState<NodeDataModel>(defaultNodeData);
     const [pin, setPin] = useState("");
 
-    const pinChanged = (event) =>{
+    const pinChanged = (event: React.ChangeEvent<HTMLInputElement>) =>{
         setPin(event.target.value);
     }
 
-    const getNodeData = (mac) => {
-        axios.get('http://' + record.controlPointIp + '/triggerUpdate?mac=' + mac)
+    const getNodeData = (node: NodeVM) => {
+        axios.get('http://' + node.controlPointIp + '/triggerUpdate?mac=' + node.Mac)
         .then(res=>{
-            axios.get('http://' + record.controlPointIp + '/nodeData?nodeId=' + recordId)
+            axios.get('http://' + node.controlPointIp + '/nodeData?nodeId=' + node.Id)
             .then(res=>{
                 setData(res.data);
             })
@@ -28,7 +55,7 @@ export default function NodeData(props){
         .catch(err=>console.log(err))
     }
 
-    const toggleButton = (switchId) => {
+    const toggleButton = (switchId: number) => {
         const requestBody = JSON.stringify({"pinCode" : pin});
         const url = process.env.REACT_APP_API_URL + '/node/switch/toggle/' + switchId;
         let mac = record.Mac;
@@ -36,12 +63,12 @@ export default function NodeData(props){
         axios.post(url, requestBody)
         .then(res=>{
             setData(res.data);
-            getNodeData(mac);
+            getNodeData(record);
         })
         .catch(err=>alert(err.response.data))
     }
 
-    const pressMomentary = (switchId) => {
+    const pressMomentary = (switchId: number) => {
         const requestBody = JSON.stringify({"pinCode" : pin});
         const url = process.env.REACT_APP_API_URL + '/node/switch/press/' + switchId;
         let mac = record.Mac;
@@ -49,16 +76,14 @@ export default function NodeData(props){
         axios.post(url, requestBody)
         .then(res=>{
             setData(res.data);
-            getNodeData(mac);
+            getNodeData(record);
         })
         .catch(err=>alert(err.response.data))
     }
 
-    const deleteNode = (event) => {
-        const id = event.target.id;
-
+    const deleteNode = (event: React.MouseEvent<HTMLButtonElement>) => {
         if(window.confirm("Are you sure you want to delete this node?")){
-            axios.delete(process.env.REACT_APP_API_URL + '/node/' + id + '/delete')
+            axios.delete(process.env.REACT_APP_API_URL + '/node/' + record.Id + '/delete')
             .then(res=>{
                 console.log(res);
                 navigate("/nodes");
@@ -67,7 +92,7 @@ export default function NodeData(props){
         }
     }
 
-    const displaySensorData = (sensor) => {
+    const displaySensorData = (sensor: NodeSensorVM) => {
         if(!data){
             return;
         }
@@ -77,16 +102,14 @@ export default function NodeData(props){
                 return <TempHumidity key={sensor.Id} sensorName={sensor.Name} data={data} />
             case 2:
                 return <p key={sensor.Id}>{sensor.Name}: {data.Moisture}</p>
-            case 3:
-                return <p key={sensor.Id}>{sensor.Name}: {data.Magnetic}</p>
             case 4:
                 return <p key={sensor.Id}>{sensor.Name}: {data.ResistorValue}</p>
             default:
-                return <p div key={sensor.Id}>Invalid Input</p>
+                return <p key={sensor.Id}>Invalid Input</p>
         }
     }
 
-    const displaySwitchData = (nodeSwitch) => {
+    const displaySwitchData = (nodeSwitch: NodeSwitchVM) => {
         if(!data){
             return;
         }
@@ -103,17 +126,22 @@ export default function NodeData(props){
                     &nbsp; (Circuit is {data.IsClosed ? "closed":"open"})
                 </div>
             default:
-                return <p div key={nodeSwitch.Id}>Invalid Input</p>
+                return <p key={nodeSwitch.Id}>Invalid Input</p>
         }
     }
 
     useEffect(() => {
-        axios.get(process.env.REACT_APP_API_URL + '/node/' + recordId)
+        axios.get(process.env.REACT_APP_API_URL + '/node/' + record.Id)
         .then(res=>{
+            console.log(res.data);
+            if(!res.data.sensors){
+                res.data.sensors = [];
+            }
+            if(!res.data.switches){
+                res.data.switches = [];
+            }
             setRecord(res.data);
-            setAllSensors(res.data.sensors ? res.data.sensors : [])
-            setAllSwitches(res.data.switches ? res.data.switches : [])
-            getNodeData(res.data.Mac);
+            getNodeData(res.data);
         })
         .catch(err=>console.log(err))
     }, [""]);
@@ -123,19 +151,18 @@ export default function NodeData(props){
         <p>PIN: <input onChange={pinChanged} type="password" id="requestPIN" /></p>
         <h2>Node Details</h2>
         <p>Name: {record.Name}</p>
-        <p>IP Address: {record.IpAddress}</p>
         <p>MAC Address: {record.Mac}</p>
-        <button id={recordId} onClick={deleteNode}>Delete</button>
-        <button onClick={() => getNodeData(record.Mac)}>Refresh</button>
+        <button onClick={deleteNode}>Delete</button>
+        <button onClick={() => getNodeData(record)}>Refresh</button>
         <br />
         
         <h2>Node Sensors</h2>
-        {allSensors.map((sensor) => (
+        {record.sensors.map((sensor) => (
             displaySensorData(sensor)
         ))}
 
         <h2>Node Switches</h2>
-        {allSwitches.map((nodeSwitch) => (
+        {record.switches.map((nodeSwitch) => (
             displaySwitchData(nodeSwitch)
         ))}
         </>
