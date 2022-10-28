@@ -1,18 +1,17 @@
 import React,{useState} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { View } from "../../Models/View";
 
 export default function CreateView(props){
     const navigate = useNavigate();
-    const [viewName, setViewName] = useState("");
+    const [view, setView] = useState<View>({ Id: 0, Name: ""});
 
     const nameChanged = (event) => {
-        setViewName(event.target.value);
+        setView({...view, Name: event.target.value});
     }
 
-    const saveClicked = (event) => {
-        let view = { "Name" : viewName };
-
+    const saveClicked = () => {
         axios.post(process.env.REACT_APP_API_URL + '/view', view)
         .then(res=>{
             navigate("/views");

@@ -1,13 +1,14 @@
 import React, {useState} from "react";
 import axios from "axios";
+import { NodeSensorVM } from "../../Models/NodeSensorVM";
 
 export default function NodeSensor(props){
     props.sensor.label = "";
     props.sensor.ViewId = parseInt(props.viewId);
 
-    const [sensor, setSensor] = useState(props.sensor);
-    const [labelValid, setLabelValid] = useState(false);
-    const [id, setId] = useState(0);
+    const [sensor, setSensor] = useState<NodeSensorVM>(props.sensor);
+    const [labelValid, setLabelValid] = useState<boolean>(false);
+    const [id, setId] = useState<number>(0);
 
     const addSelected = () => {
         let sensorData = {
@@ -41,12 +42,12 @@ export default function NodeSensor(props){
         }
     }
 
-    const checkboxChanged = (event) => {
-        setSensor({...sensor, isChecked: event.target.checked});
+    const checkboxChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSensor({...sensor, IsChecked: event.target.checked});
         toggleSelectSensor(event);
     }
 
-    const labelChanged = (event) => {
+    const labelChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
         let valid = false;
         let label = event.target.value;
 
@@ -64,7 +65,7 @@ export default function NodeSensor(props){
             Name: {sensor.Name}, Type: {sensor.SensorTypeName}, Pin: {sensor.Pin}
             &nbsp;- <label>
                 Label&nbsp;
-                <input type="text" id={"label" + sensor.Id} disabled={sensor.isChecked} value={sensor.label} onChange={labelChanged} />&nbsp;
+                <input type="text" id={"label" + sensor.Id} disabled={sensor.IsChecked} value={sensor.label} onChange={labelChanged} />&nbsp;
             </label>
             <label>
                 Add to view&nbsp;

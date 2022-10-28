@@ -1,7 +1,17 @@
 import React from "react";
-import NodeSensor from "./NodeSensor";
+// @ts-ignore
+import NodeSensor from "./NodeSensor.tsx";
+import { NodeSensorVM } from "../../Models/NodeSensorVM";
+// @ts-ignore
+import { NodeVM } from "../../Models/NodeVM";
 
-export default function NodeSensorList(props){
+interface NodeSensorListProps{
+    viewId: number,
+    node: NodeVM,
+    sensorIsSelected(id: number): boolean
+}
+
+export default function NodeSensorList(props: NodeSensorListProps){
     const node = props.node;
     const viewId = props.viewId;
     const sensorIsSelected = props.sensorIsSelected;
@@ -12,8 +22,8 @@ export default function NodeSensorList(props){
             <>
             <p>Available Sensors</p>
             <ul>
-                {node.sensors.map((sensor) => {
-                    sensor.isChecked = false;
+                {node.sensors.map((sensor: NodeSensorVM) => {
+                    sensor.IsChecked = false;
 
                     return (
                         !sensorIsSelected(sensor.Id) &&

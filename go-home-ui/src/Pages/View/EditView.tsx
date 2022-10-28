@@ -3,23 +3,32 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import ReactModal from "react-modal";
-import NodeSensorList from "../../Components/Node/NodeSensorList";
-import NodeSwitchList from "../../Components/Node/NodeSwitchList";
+// @ts-ignore
+import NodeSensorList from "../../Components/Node/NodeSensorList.tsx";
+// @ts-ignore
+import NodeSwitchList from "../../Components/Node/NodeSwitchList.tsx";
+import { ViewVM } from "../../Models/ViewVM";
+import { NodeVM } from "../../Models/NodeVM";
+
+const defaultViewData: ViewVM = {
+    Id: 0,
+    Name: "",
+    sensors: [],
+    switches: []
+}
 
 export default function EditView(){
     const navigate = useNavigate();
-    const [name, setName] = useState('');
-    const [switches, setSwitches] = useState([]);
-    const [sensors, setSensors] = useState([]);
-    const [allNodes, setAllNodes] = useState([]);
+    const [view, setView] = useState<ViewVM>(defaultViewData);
+    const [allNodes, setAllNodes] = useState<NodeVM[]>([]);
     const [showSensorModal, setShowSensorModal] = useState(false);
     const [showSwitchModal, setShowSwitchModal] = useState(false);
 
     let { id } = useParams();
 
-    const sensorIsSelected = sensorId =>{
+    const sensorIsSelected = (sensorId: number) =>{
         let exists = false;
-        sensors.forEach((sensor) => {
+        view.sensors.forEach((sensor) => {
             if(sensor.NodeSensorId === sensorId){
                 exists = true;
             }
@@ -28,9 +37,9 @@ export default function EditView(){
         return exists;
     }
 
-    const switchIsSelected = switchId =>{
+    const switchIsSelected = (switchId: number) =>{
         let exists = false;
-        switches.forEach((nodeSwitch, index) => {
+        view.switches.forEach((nodeSwitch, index) => {
             if(nodeSwitch.NodeSwitchId === switchId){
                 exists = true;
             }
@@ -52,26 +61,20 @@ export default function EditView(){
     const fetchViewData = () => {
         axios.get(process.env.REACT_APP_API_URL + '/view/' + id)
         .then(res=>{
-            if(res.data && res.data.Name){
-                setName(res.data.Name);
-
-                if(res.data.sensors){
-                    setSensors(res.data.sensors);
-                }else{
-                    setSensors([]);
+            if(res.data){
+                if(res.data.sensors === null){
+                    res.data.sensors = [];
                 }
-
-                if(res.data.switches){
-                    setSwitches(res.data.switches);
-                }else{
-                    setSwitches([]);
+                if(res.data.switches === null){
+                    res.data.switches = [];
                 }
+                setView(res.data);
             }
         })
         .catch(err=>console.log(err))
     }
 
-    const removeSelectedSensor = sensorId => {
+    const removeSelectedSensor = (sensorId: number) => {
         axios.delete(process.env.REACT_APP_API_URL + '/view/node/sensor/' + sensorId)
         .then(res=>{
             fetchViewData();
@@ -79,7 +82,7 @@ export default function EditView(){
         .catch(err=>alert(err.response.data))
     }
 
-    const removeSelectedSwitch = switchId => {
+    const removeSelectedSwitch = (switchId: number) => {
         axios.delete(process.env.REACT_APP_API_URL + '/view/node/switch/' + switchId)
         .then(res=>{
             fetchViewData();
@@ -89,13 +92,12 @@ export default function EditView(){
 
     const saveClicked = () => {
         let thisView = {
-            Id: parseInt(id),
-            Name: name
+            Id: view.Id,
+            Name: view.Name
         }
 
         axios.put(process.env.REACT_APP_API_URL + '/view', thisView)
         .then(res=>{
-            console.log(res);
             fetchViewData();
         })
         .catch(err=>alert(err.response.data))
@@ -115,8 +117,8 @@ export default function EditView(){
         <h2>Edit View</h2>
         <p>Name <input
             type="text"
-            value={name}
-            onChange={event => setName(event.target.value)}
+            value={view.Name}
+            onChange={event => setView({...view, Name: event.target.value})}
         /></p>
         <button onClick={cancelClicked}>Cancel</button>
         <button onClick={saveClicked}>Save</button>
@@ -126,7 +128,7 @@ export default function EditView(){
         <button onClick={() => {setShowSensorModal(true);}}>Add A Sensor</button>
         <br />
         <br />
-        {sensors.map((sensor) => {
+        {view.sensors.map((sensor) => {
             return (
                 <div key={sensor.Id}>{sensor.Name} <button onClick={() => {removeSelectedSensor(sensor.Id)}}>Remove</button></div>
             )
@@ -147,7 +149,7 @@ export default function EditView(){
         <button onClick={() => {setShowSwitchModal(true);}}>Add A Switch</button>
         <br />
         <br />
-        {switches.map((nodeSwitch) => (
+        {view.switches.map((nodeSwitch) => (
             <div key={nodeSwitch.Id}>{nodeSwitch.Name} <button onClick={() => {removeSelectedSwitch(nodeSwitch.Id)}}>Remove</button></div>
         ))}
 
