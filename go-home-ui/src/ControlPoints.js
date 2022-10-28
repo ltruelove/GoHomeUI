@@ -1,40 +1,30 @@
-import React,{Component} from "react";
+import React,{useEffect, useState} from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-class ControlPoints extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
-            allPoints: []
-        };
-    }
+export default function ControlPoints(props){
+    const [allPoints, setAllPoints] = useState([]);
 
-    componentDidMount(){
+    useEffect(() => {
         axios.get(process.env.REACT_APP_API_URL + '/controlPoint')
         .then(res=>{
-            console.log(res.data);
             if(res.data){
-                this.setState({allPoints: res.data})
+                setAllPoints(res.data? res.data : []);
             }
         })
         .catch(err=>console.log(err))
-    }
+    }, [""]);
 
-    render(){
-        return (
-            <>
-            <h3>Control Points</h3>
-            <ul>
-                {this.state.allPoints.map((point) => (
-                    <li key={point.Id}>
-                        <Link className="App-link" to={`/controlPoint/${point.Id}`}>{point.Name}</Link>
-                    </li>
-                ))}
-            </ul>
-            </>
-        )
-    }
+    return (
+        <>
+        <h3>Control Points</h3>
+        <ul>
+            {allPoints.map((point) => (
+                <li key={point.Id}>
+                    <Link className="App-link" to={`/controlPoint/${point.Id}`}>{point.Name}</Link>
+                </li>
+            ))}
+        </ul>
+        </>
+    )
 }
-
-export default ControlPoints;

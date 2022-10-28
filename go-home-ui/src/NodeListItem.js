@@ -1,36 +1,39 @@
-import React, {Component} from "react";
+import React, {useState} from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 
-class NodeListItem extends Component{
-    constructor(props){
-        super(props);
+export default function NodeListItem(props){
+    const [details, setDetails] = useState({});
+    const [showDetails, setShowDetails] = useState(false);
+    const id = props.Id;
+    const name = props.Name;
+    const record = props.record;
 
-        this.getNodeData = props.getNodeData.bind(this);
+    const getNodeData = (nodeId) =>{ 
+        axios.get('http://' + record.IpAddress + '/nodeData?nodeId=' + id)
+        .then(res=>{
+            if(res.data){
+                setShowDetails(true);
+                setDetails(res.data);
+            }
+        })
+        .catch(err=>console.log(err))
     }
 
-    componentDidMount(){
-    }
-
-
-    render(){
-        let details;
-        if(this.props.details){
-            details = <div>
-                <p>Humidity: {this.props.details.Humidity}</p>
-                <p>Moisture: {this.props.details.Moisture}</p>
-                <p>Temperature F: {this.props.details.TemperatureF}</p>
-                <p>Termperature C: {this.props.details.TemperatureC}</p>
-                <p>Toggle Is Closed: {this.props.details.IsClosed ? "Yes" : "No"}</p>
-                <p>Resistor Value: {this.props.details.ResistorValue}</p>
-                </div>
-        }
         return (
             <>
-                <Link className="App-link" to={`/node/${this.props.Id}`}>{this.props.Name}</Link> - <Link onClick={() => this.getNodeData(this.props.Id)} className="App-link">Details</Link>
-                {details}
+                <Link className="App-link" to={`/node/${id}`}>{name}</Link> - <Link onClick={() => getNodeData(id)} className="App-link">Details</Link>
+                {showDetails ?
+                <div>
+                    <p>Humidity: {details.Humidity}</p>
+                    <p>Moisture: {details.Moisture}</p>
+                    <p>Temperature F: {details.TemperatureF}</p>
+                    <p>Termperature C: {details.TemperatureC}</p>
+                    <p>Toggle Is Closed: {details.IsClosed ? "Yes" : "No"}</p>
+                    <p>Resistor Value: {details.ResistorValue}</p>
+                </div>
+                : ""
+                }
             </>
-        )
-    }
+            )
 }
-
-export default NodeListItem;

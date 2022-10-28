@@ -4,8 +4,10 @@ import { useParams } from "react-router-dom";
 import ReactModal from "react-modal";
 import NodeSensorList from "./NodeSensorList";
 import NodeSwitchList from "./NodeSwitchList";
+import { useNavigate } from "react-router-dom";
 
 export default function EditView(){
+    const navigate = useNavigate();
     const [name, setName] = useState('');
     const [switches, setSwitches] = useState([]);
     const [sensors, setSensors] = useState([]);
@@ -50,7 +52,6 @@ export default function EditView(){
     const fetchViewData = () => {
         axios.get(process.env.REACT_APP_API_URL + '/view/' + id)
         .then(res=>{
-            console.log(res.data);
             if(res.data && res.data.Name){
                 setName(res.data.Name);
 
@@ -100,6 +101,10 @@ export default function EditView(){
         .catch(err=>alert(err.response.data))
     }
 
+    const cancelClicked = () => {
+        navigate('/view/' + id);
+    }
+
     useEffect(() => {
         fetchViewData();
         fetchAllNodes();
@@ -113,6 +118,7 @@ export default function EditView(){
             value={name}
             onChange={event => setName(event.target.value)}
         /></p>
+        <button onClick={cancelClicked}>Cancel</button>
         <button onClick={saveClicked}>Save</button>
         <br />
         <br />
@@ -142,7 +148,7 @@ export default function EditView(){
         <br />
         <br />
         {switches.map((nodeSwitch) => (
-            <div>{nodeSwitch.Name} <button onClick={() => {removeSelectedSwitch(nodeSwitch.Id)}}>Remove</button></div>
+            <div key={nodeSwitch.Id}>{nodeSwitch.Name} <button onClick={() => {removeSelectedSwitch(nodeSwitch.Id)}}>Remove</button></div>
         ))}
 
         <ReactModal isOpen={showSwitchModal} onAfterClose={fetchViewData} ariaHideApp={false}>

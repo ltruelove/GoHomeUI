@@ -1,95 +1,75 @@
-import React, {Component} from "react";
+import React, {useState} from "react";
 import axios from "axios";
 
-class NodeSwitch extends Component{
-    constructor(props){
-        super(props);
-        
-        props.nodeSwitch.label = "";
-        props.nodeSwitch.ViewId = parseInt(props.viewId);
+export default function NodeSwitch(props) {
+    props.nodeSwitch.label = "";
+    props.nodeSwitch.ViewId = parseInt(props.viewId);
 
-        this.state = {
-            nodeSwitch: props.nodeSwitch,
-            labelValid: false,
-            isChecked: false,
-            id: 0
-        }
+    const [nodeSwitch, setNodeSwitch] = useState(props.nodeSwitch);
+    const [labelValid, setLabelValid] = useState(false);
+    const [id, setId] = useState(0);
 
-        this.addSelected = this.addSelected.bind(this);
-        this.removeSelected = this.removeSelected.bind(this);
-        this.toggleSelectedSwitch = this.toggleSelectSwitch.bind(this);
-        this.handleLabelChange = this.handleLabelChange.bind(this);
-        this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
-    }
-
-    handleCheckboxChange(event){
-        var nodeSwitch = this.state.nodeSwitch;
-        nodeSwitch.isChecked = event.target.checked;
-
-        this.setState({nodeSwitch: nodeSwitch});
-        this.toggleSelectedSwitch(event, nodeSwitch);
-    }
-
-    handleLabelChange(event){
-        let valid = false;
-        let nodeSwitch = this.state.nodeSwitch;
-        nodeSwitch.label = event.target.value;
-
-        let trimmedLabel = nodeSwitch.label.replace(/\s+/g, '');
-        if(trimmedLabel !== ''){
-            valid = true;
-        }
-
-        this.setState({nodeSwitch: nodeSwitch, labelValid: valid});
-    }
-
-    toggleSelectSwitch(event){
-        if(event.target.checked){
-            this.addSelected();
-        }else{
-            this.removeSelected();
-        }
-    }
-
-    addSelected(){
+    const addSelected = () => {
         let nodeSwitchData = {
             Id : 0,
-            NodeId : this.state.nodeSwitch.NodeId,
-            ViewId : this.state.nodeSwitch.ViewId,
-            NodeSwitchId : this.state.nodeSwitch.Id,
-            Name: this.state.nodeSwitch.label
+            NodeId : nodeSwitch.NodeId,
+            ViewId : nodeSwitch.ViewId,
+            NodeSwitchId : nodeSwitch.Id,
+            Name: nodeSwitch.label
         }
 
         axios.post(process.env.REACT_APP_API_URL + '/view/node/switch', nodeSwitchData)
         .then(res=>{
-            this.setState({id: res.data.Id});
+            console.log(res.data);
+            setId(res.data.Id);
         })
         .catch(err=>alert(err.response.data))
     }
 
-    removeSelected(){
-        axios.delete(process.env.REACT_APP_API_URL + '/view/node/switch/' + this.state.id)
+    const removeSelected = () => {
+        axios.delete(process.env.REACT_APP_API_URL + '/view/node/switch/' + id)
         .then(res=>{
-            this.setState({id: 0});
+            setId(0);
         })
         .catch(err=>alert(err.response.data))
     }
 
-    render(){
-        return(
-            <li>
-                Name: {this.state.nodeSwitch.Name}, Type: {this.state.nodeSwitch.SwitchTypeName}, Pin: {this.state.nodeSwitch.Pin}
-                &nbsp;- <label>
-                    Label&nbsp;
-                    <input type="text" id={"label" + this.state.nodeSwitch.Id} disabled={this.state.nodeSwitch.isChecked} value={this.state.nodeSwitch.label} onChange={this.handleLabelChange} />&nbsp;
-                </label>
-                <label>
-                    Add to view&nbsp;
-                    <input type="checkbox" id={"checkbox" + this.state.nodeSwitch.Id} disabled={!this.state.labelValid} onChange={this.handleCheckboxChange} />&nbsp;
-                </label>
-            </li>
-        )
+    const toggleSelectSwitch = (event) => {
+        if(event.target.checked){
+            addSelected();
+        }else{
+            removeSelected();
+        }
     }
-}
 
-export default NodeSwitch;
+    const checkboxChanged = (event) =>{
+        setNodeSwitch({...nodeSwitch, isChecked: event.target.checked});
+        toggleSelectSwitch(event, nodeSwitch);
+    }
+
+    const labelChanged = (event) => {
+        let valid = false;
+        let label = event.target.value;
+
+        let trimmedLabel = label.replace(/\s+/g, '');
+        if(trimmedLabel !== ''){
+            valid = true;
+        }
+        setNodeSwitch({...nodeSwitch, label: label});
+        setLabelValid(valid);
+    }
+
+    return(
+        <li>
+            Name: {nodeSwitch.Name}, Type: {nodeSwitch.SwitchTypeName}, Pin: {nodeSwitch.Pin}
+            &nbsp;- <label>
+                Label&nbsp;
+                <input type="text" id={"label" + nodeSwitch.Id} disabled={nodeSwitch.isChecked} value={nodeSwitch.label} onChange={labelChanged} />&nbsp;
+            </label>
+            <label>
+                Add to view&nbsp;
+                <input type="checkbox" id={"checkbox" + nodeSwitch.Id} disabled={!labelValid} onChange={checkboxChanged} />&nbsp;
+            </label>
+        </li>
+    )
+}

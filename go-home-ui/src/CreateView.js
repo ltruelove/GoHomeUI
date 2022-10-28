@@ -1,43 +1,30 @@
-import React,{Component} from "react";
+import React,{useState} from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-class CreateView extends Component{
-    constructor(props){
-        super(props);
+export default function CreateView(props){
+    const navigate = useNavigate();
+    const [viewName, setViewName] = useState("");
 
-        this.state = {
-            viewId: 0,
-            viewName: ""
-        };
-
-        this.saveClicked = this.saveClicked.bind(this);
-        this.handleName = this.handleName.bind(this);
+    const nameChanged = (event) => {
+        setViewName(event.target.value);
     }
 
-    handleName = event => {
-        this.setState({ viewName: event.target.value });
-    };
-
-    saveClicked = event =>{
-        let view = { "Name" : this.state.viewName };
+    const saveClicked = (event) => {
+        let view = { "Name" : viewName };
 
         axios.post(process.env.REACT_APP_API_URL + '/view', view)
         .then(res=>{
-            console.log(res);
-            window.location = '/views';
+            navigate("/views");
         })
         .catch(err=>alert(err.response.data))
     }
 
-    render(){
-        return (
-            <>
-            <h2>Create A View</h2>
-            <p>Name <input onChange={this.handleName} type="text" name="viewName" /></p>
-            <button onClick={this.saveClicked}>Save</button>
-            </>
-        )
-    }
+    return (
+        <>
+        <h2>Create A View</h2>
+        <p>Name <input onChange={nameChanged} type="text" name="viewName" /></p>
+        <button onClick={saveClicked}>Save</button>
+        </>
+    )
 }
-
-export default CreateView;

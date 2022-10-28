@@ -9,6 +9,7 @@ import Nav from './Nav';
 import Views from './Views';
 import CreateView from './CreateView';
 import EditView from './EditView';
+import ViewDetail from './ViewDetail';
 
 export default function App(){
   return (
@@ -33,7 +34,8 @@ export default function App(){
               <Route path="node/:id" element={<Node />} />
               <Route path="views" element={<Views />} />
               <Route path="view/create" element={<CreateView />} />
-              <Route path="view/:id" element={<EditView />} />
+              <Route path="view/:id" element={<ViewDetail />} />
+              <Route path="view/edit/:id" element={<EditView />} />
             </Routes>
           </div>
         </div>
