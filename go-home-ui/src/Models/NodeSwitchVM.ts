@@ -4,6 +4,7 @@ export interface NodeSwitchVM {
     MomentaryPressDuration: number,
     Name: string,
     NodeId: number,
+    NodeSwitchId: number,
     Pin: number,
     SwitchTypeId: number,
     SwitchTypeName: string,

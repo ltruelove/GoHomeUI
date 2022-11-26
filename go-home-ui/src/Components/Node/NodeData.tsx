@@ -58,7 +58,6 @@ export default function NodeData(props: NodeDataProps){
     const toggleButton = (switchId: number) => {
         const requestBody = JSON.stringify({"pinCode" : pin});
         const url = process.env.REACT_APP_API_URL + '/node/switch/toggle/' + switchId;
-        let mac = record.Mac;
 
         axios.post(url, requestBody)
         .then(res=>{
@@ -71,7 +70,6 @@ export default function NodeData(props: NodeDataProps){
     const pressMomentary = (switchId: number) => {
         const requestBody = JSON.stringify({"pinCode" : pin});
         const url = process.env.REACT_APP_API_URL + '/node/switch/press/' + switchId;
-        let mac = record.Mac;
 
         axios.post(url, requestBody)
         .then(res=>{
