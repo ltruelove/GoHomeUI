@@ -46,11 +46,14 @@ export default function NodeData(props: NodeDataProps){
     const getNodeData = (node: NodeVM) => {
         axios.get('http://' + node.controlPointIp + '/triggerUpdate?mac=' + node.Mac)
         .then(res=>{
-            axios.get('http://' + node.controlPointIp + '/nodeData?nodeId=' + node.Id)
-            .then(res=>{
-                setData(res.data);
-            })
-            .catch(err=>console.log(err))
+            // there needs to be a slight delay before fetching the updated data
+            setTimeout(() => {
+                axios.get('http://' + node.controlPointIp + '/nodeData?nodeId=' + node.Id)
+                .then(res=>{
+                    setData(res.data);
+                })
+                .catch(err=>console.log(err))
+            }, 100);
         })
         .catch(err=>console.log(err))
     }
@@ -142,7 +145,7 @@ export default function NodeData(props: NodeDataProps){
             getNodeData(res.data);
         })
         .catch(err=>console.log(err))
-    }, [""]);
+    }, []);
 
     return (
         <>
