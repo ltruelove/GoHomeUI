@@ -44,11 +44,11 @@ export default function NodeData(props: NodeDataProps){
     }
 
     const getNodeData = (node: NodeVM) => {
-        axios.get('http://' + node.controlPointIp + '/triggerUpdate?mac=' + node.Mac)
+        axios.post(process.env.REACT_APP_API_URL + '/node/update/' + node.Id)
         .then(res=>{
             // there needs to be a slight delay before fetching the updated data
             setTimeout(() => {
-                axios.get('http://' + node.controlPointIp + '/nodeData?nodeId=' + node.Id)
+                axios.get(process.env.REACT_APP_API_URL + '/node/data/' + node.Id)
                 .then(res=>{
                     setData(res.data);
                 })
