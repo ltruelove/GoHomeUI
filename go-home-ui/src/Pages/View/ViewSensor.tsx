@@ -3,6 +3,8 @@ import axios from "axios";
 import { NodeSensorVM } from "../../Models/NodeSensorVM";
 import { NodeVM } from "../../Models/NodeVM";
 import { NodeDataModel } from "../../Models/NodeDataModel";
+// @ts-ignore
+import TempHumidity from "../../Components/View/TempHumidity.tsx";
 
 interface SensorData {
     nodeSensor: NodeSensorVM,
@@ -40,7 +42,10 @@ export function ViewSensor(props:SensorData){
         switch(nodeSensor.SensorTypeName){
             case "DHT":
                 return(
-                    <p>Humidity: {nodeData.Humidity}, Temperature F: {nodeData.TemperatureF}, Termperature C: {nodeData.TemperatureC}</p>
+                    <>
+                    <TempHumidity key={nodeSensor.Id} sensorName={nodeSensor.Name} data={nodeData} />
+                    <br/>
+                    </>
                 )
                 break;
             case "Moisture":
@@ -70,6 +75,6 @@ export function ViewSensor(props:SensorData){
     }, []);
 
     return (
-        <div>{nodeSensor.Name} {displayData()}</div>
+        <div>{displayData()}</div>
     )
 }

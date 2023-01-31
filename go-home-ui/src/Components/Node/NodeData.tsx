@@ -86,11 +86,14 @@ export default function NodeData(props: NodeDataProps){
         if(window.confirm("Are you sure you want to delete this node?")){
             axios.delete(process.env.REACT_APP_API_URL + '/node/' + record.Id + '/delete')
             .then(res=>{
-                console.log(res);
                 navigate("/nodes");
             })
             .catch(err=>console.log(err))
         }
+    }
+
+    const editNode =  (event: React.MouseEvent<HTMLButtonElement>) => {
+        navigate("/node/edit/" + record.Id);
     }
 
     const displaySensorData = (sensor: NodeSensorVM) => {
@@ -150,11 +153,12 @@ export default function NodeData(props: NodeDataProps){
     return (
         <>
         <p>PIN: <input onChange={pinChanged} type="password" id="requestPIN" /></p>
-        <h2>Node Details</h2>
+        <h2>Node Details </h2>
         <p>Name: {record.Name}</p>
         <p>MAC Address: {record.Mac}</p>
         <button onClick={deleteNode}>Delete</button>
         <button onClick={() => getNodeData(record)}>Refresh</button>
+        <button onClick={editNode}>Edit Name</button>
         <br />
         
         <h2>Node Sensors</h2>

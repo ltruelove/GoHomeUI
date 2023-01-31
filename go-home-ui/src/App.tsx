@@ -11,6 +11,8 @@ import Nodes from './Pages/Node/Nodes.tsx';
 // @ts-ignore
 import Node from './Pages/Node/Node.tsx';
 // @ts-ignore
+import NodeEdit from './Pages/Node/NodeEdit.tsx';
+// @ts-ignore
 import Nav from './Nav.tsx';
 // @ts-ignore
 import Views from './Pages/View/Views.tsx';
@@ -42,6 +44,7 @@ export default function App(){
               <Route path="controlPoint/:id" element={<ControlPoint />} />
               <Route path="nodes" element={<Nodes />} />
               <Route path="node/:id" element={<Node />} />
+              <Route path="node/edit/:id" element={<NodeEdit />} />
               <Route path="views" element={<Views />} />
               <Route path="view/create" element={<CreateView />} />
               <Route path="view/:id" element={<ViewDetail />} />
