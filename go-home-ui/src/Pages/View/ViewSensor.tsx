@@ -27,7 +27,7 @@ export function ViewSensor(props:SensorData){
     const [nodeData, setData] = useState<NodeDataModel>(defaultNodeData)
 
     const getNodeData = (node: NodeVM) => {
-        axios.get(process.env.REACT_APP_API_URL + '/node/update/' + node.Id)
+        axios.post(process.env.REACT_APP_API_URL + '/node/update/' + node.Id)
         .then(res=>{
             axios.get(process.env.REACT_APP_API_URL + '/node/data/' + node.Id)
             .then(res=>{
