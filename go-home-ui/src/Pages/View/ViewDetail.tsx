@@ -107,6 +107,10 @@ export default function ViewDetail(){
 
     useEffect(() => {
         fetchViewData();
+    }, [id]);
+
+    useEffect(() => {
+        fetchViewData();
     }, []);
 
     useEffect(() => {

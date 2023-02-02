@@ -8,17 +8,6 @@ import { NodeDataModel } from "../../Models/NodeDataModel";
 import { NodeSensorVM } from "../../Models/NodeSensorVM";
 import { NodeSwitchVM } from "../../Models/NodeSwitchVM";
 
-const defaultNodeRecord: NodeVM = {
-    Id: 0,
-    Name: "",
-    Mac: "",
-    controlPointId: 0,
-    controlPointIp: "",
-    controlPointName: "",
-    sensors: [],
-    switches: []
-}
-
 const defaultNodeData: NodeDataModel = {
     Humidity: 0,
     Moisture: 0,
@@ -31,12 +20,12 @@ const defaultNodeData: NodeDataModel = {
 };
 
 interface NodeDataProps {
-    id: number
+    record: NodeVM
 }
 
 export default function NodeData(props: NodeDataProps){
     const navigate = useNavigate();
-    const [record, setRecord] = useState<NodeVM>({...defaultNodeRecord, Id: props.id});
+    const record = props.record;
     const [data, setData] = useState<NodeDataModel>(defaultNodeData);
     const [pin, setPin] = useState("");
 
@@ -138,20 +127,8 @@ export default function NodeData(props: NodeDataProps){
     }
 
     useEffect(() => {
-        axios.get(process.env.REACT_APP_API_URL + '/node/' + record.Id)
-        .then(res=>{
-            console.log(res.data);
-            if(!res.data.sensors){
-                res.data.sensors = [];
-            }
-            if(!res.data.switches){
-                res.data.switches = [];
-            }
-            setRecord(res.data);
-            getNodeData(res.data);
-        })
-        .catch(err=>console.log(err))
-    }, []);
+        getNodeData(record);
+    }, [record]);
 
     return (
         <>

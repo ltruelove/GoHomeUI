@@ -1,9 +1,10 @@
 import React,{useEffect, useState} from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { NodeVM } from "../../Models/NodeVM"
 
 export default function Nodes(props){
-    const [allNodes, setAllNodes] = useState([]);
+    const [allNodes, setAllNodes] = useState<NodeVM[]>([]);
 
     useEffect(() => {
         axios.get(process.env.REACT_APP_API_URL + '/node')

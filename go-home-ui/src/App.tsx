@@ -13,7 +13,7 @@ import Node from './Pages/Node/Node.tsx';
 // @ts-ignore
 import NodeEdit from './Pages/Node/NodeEdit.tsx';
 // @ts-ignore
-import Nav from './Nav.tsx';
+import SiteNav from './SiteNav.tsx';
 // @ts-ignore
 import Views from './Pages/View/Views.tsx';
 // @ts-ignore
@@ -28,16 +28,8 @@ export default function App(){
     <div className="GoHomeUIApp">
       <BrowserRouter>
         <div style={{ display: "flex" }}>
-          <div
-            style={{
-              padding: "10px",
-              width: "10%",
-              background: "#f0f0f0"
-            }}
-          >
-            <Nav />
-          </div>
           <div style={{ flex: 1, padding: "10px" }}>
+            <SiteNav />
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="controlPoints" element={<ControlPoints />} />

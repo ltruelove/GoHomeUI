@@ -40,7 +40,6 @@ export function ViewSensor(props:SensorData){
     }
 
     const displayData = () => {
-        console.log(nodeSensor.SensorTypeName);
         switch(nodeSensor.SensorTypeName){
             case "DHT":
                 return(
