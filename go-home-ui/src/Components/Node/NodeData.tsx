@@ -26,6 +26,7 @@ const defaultNodeData: NodeDataModel = {
     TemperatureC: 0,
     IsClosed: false,
     ResistorValue: 0,
+    MagneticValue: 0,
     nodeId: 0
 };
 
@@ -106,6 +107,8 @@ export default function NodeData(props: NodeDataProps){
                 return <TempHumidity key={sensor.Id} sensorName={sensor.Name} data={data} />
             case 2:
                 return <p key={sensor.Id}>{sensor.Name}: {data.Moisture}</p>
+            case 3:
+                return <p key={sensor.Id}>{sensor.Name}: {data.MagneticValue > 0 ? 'Closed' : 'Open'}</p>
             case 4:
                 return <p key={sensor.Id}>{sensor.Name}: {data.ResistorValue}</p>
             default:

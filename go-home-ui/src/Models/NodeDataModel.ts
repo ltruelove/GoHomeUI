@@ -5,5 +5,6 @@ export interface NodeDataModel {
     TemperatureC: number,
     IsClosed: boolean
     ResistorValue: number,
+    MagneticValue: number,
     nodeId: number
 }

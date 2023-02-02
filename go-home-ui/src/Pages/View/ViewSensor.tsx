@@ -18,6 +18,7 @@ const defaultNodeData: NodeDataModel = {
     TemperatureC: 0,
     IsClosed: false,
     ResistorValue: 0,
+    MagneticValue: 0,
     nodeId: 0
 };
 
@@ -39,6 +40,7 @@ export function ViewSensor(props:SensorData){
     }
 
     const displayData = () => {
+        console.log(nodeSensor.SensorTypeName);
         switch(nodeSensor.SensorTypeName){
             case "DHT":
                 return(
@@ -47,22 +49,18 @@ export function ViewSensor(props:SensorData){
                     <br/>
                     </>
                 )
-                break;
             case "Moisture":
                 return(
                     <p>Moisture Level: {nodeData.Moisture}</p>
                 )
-                break;
             case "Magnetic":
                 return(
                     <p>Is Closed?: {nodeData.IsClosed ? "Yes" : "No"}</p>
                 )
-                break;
             case "Photoresistor":
                 return(
                     <p>Resistor Value: {nodeData.ResistorValue}</p>
                 )
-                break;
             default:
                 return(
                     <p>no data found</p>
