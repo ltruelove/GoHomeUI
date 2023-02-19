@@ -36,8 +36,8 @@ export default function Node(){
     }, [id]);
 
     return (
-        <>
+        <div className="App">
         <NodeData record={record} />
-        </>
+        </div>
     )
 }

@@ -126,7 +126,7 @@ export default function ViewDetail(){
     }, [nodeIdList])
 
     return (
-        <>
+        <div className="ViewDetail">
             <h2>{view.Name}</h2>
             <br />
             <Link className="App-link" to={`/view/edit/${id}`}>Edit</Link>
@@ -153,6 +153,6 @@ export default function ViewDetail(){
                 <ViewSwitch key={nodeSwitch.Id} nodeSwitch={nodeSwitch} pin={pin} />
             ))}
             </> : ""}
-        </>
+        </div>
     )
 }

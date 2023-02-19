@@ -16,3 +16,26 @@
 .App-link {
   color: #61dafb;
 }
+
+.NodeData {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: left;
+}
+
+.NodeDetails {
+  text-align: left;
+}
+
+.SensorChart {
+  width: 95%;
+  height: 300px;
+}
+
+.ViewDetail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: left;
+}

@@ -2,11 +2,26 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 // @ts-ignore
 import TempHumidity from "../View/TempHumidity.tsx";
+// @ts-ignore
+import TempFChart from "./TempFChart.tsx";
+// @ts-ignore
+import TempCChart from "./TempCChart.tsx";
+// @ts-ignore
+import HumidityChart from "./HumidityChart.tsx";
+// @ts-ignore
+import MoistureChart from "./MoistureChart.tsx";
+// @ts-ignore
+import ResistorChart from "./ResistorChart.tsx";
+// @ts-ignore
+import IsClosedChart from "./IsClosedChart.tsx";
+// @ts-ignore
+import { FlatLog } from "../../Models/FlatLog.tx";
 import { useNavigate } from "react-router-dom";
 import { NodeVM } from "../../Models/NodeVM";
 import { NodeDataModel } from "../../Models/NodeDataModel";
 import { NodeSensorVM } from "../../Models/NodeSensorVM";
 import { NodeSwitchVM } from "../../Models/NodeSwitchVM";
+import moment from "moment-timezone";
 
 const defaultNodeData: NodeDataModel = {
     Humidity: 0,
@@ -28,6 +43,11 @@ export default function NodeData(props: NodeDataProps){
     const record = props.record;
     const [data, setData] = useState<NodeDataModel>(defaultNodeData);
     const [pin, setPin] = useState("");
+    const [logs, setLogs] = useState<FlatLog[]>([]);
+    const [showTemp, setShowTemp] = useState(false);
+    const [showMoisture, setShowMoisture] = useState(false);
+    const [showResistor, setShowResistor] = useState(false);
+    const [showMagnetic, setShowMagnetic] = useState(false);
 
     const pinChanged = (event: React.ChangeEvent<HTMLInputElement>) =>{
         setPin(event.target.value);
@@ -44,6 +64,60 @@ export default function NodeData(props: NodeDataProps){
                 })
                 .catch(err=>console.log(err))
             }, 100);
+        })
+        .catch(err=>console.log(err))
+    }
+
+    const getNodeLogs = (node: NodeVM) => {
+        axios.get(process.env.REACT_APP_API_URL + '/node/logs/' + node.Id)
+        .then(res=>{
+            console.log(res.data);
+            let tempF: FlatLog[] = [];
+
+            for(let i = 0; i < res.data.length; i++){
+                let record = res.data[i];
+                let dateLogged = moment(record.DateLogged);
+
+                let flatRecord: FlatLog = {
+                    DateLabel: dateLogged.format('L') + " " + dateLogged.format('LT'),
+                    DateLogged: record.DateLogged
+                }
+
+                if(record.TemperatureEntries){
+                    flatRecord.TemperatureF = record.TemperatureEntries[0].TemperatureF;
+                    flatRecord.TemperatureC = record.TemperatureEntries[0].TemperatureC;
+                    flatRecord.Humidity = record.TemperatureEntries[0].Humidity;
+                    setShowTemp(true);
+                }else{
+                    setShowTemp(false);
+                }
+
+                if(record.MoistureEntries){
+                    flatRecord.Moisture = record.MoistureEntries[0].Moisture;
+                    setShowMoisture(true);
+                }else{
+                    setShowMoisture(false);
+                }
+
+                if(record.ResistorEntries){
+                    flatRecord.Resistor = record.ResistorEntries[0].Resistor;
+                    setShowResistor(true);
+                }else{
+                    setShowResistor(false);
+                }
+
+                if(record.MagneticEntries){
+                    flatRecord.IsClosed = record.MagneticEntries[0].IsClosed ? 'Yes' : 'No';
+                    setShowMagnetic(true);
+                }else{
+                    setShowMagnetic(false);
+                }
+                
+                tempF.push(flatRecord);
+            }
+
+            setLogs(tempF);
+            console.log(tempF);
         })
         .catch(err=>console.log(err))
     }
@@ -128,28 +202,72 @@ export default function NodeData(props: NodeDataProps){
 
     useEffect(() => {
         getNodeData(record);
+        getNodeLogs(record);
     }, [record]);
 
     return (
-        <>
-        <p>PIN: <input onChange={pinChanged} type="password" id="requestPIN" /></p>
-        <h2>Node Details </h2>
-        <p>Name: {record.Name}</p>
-        <p>MAC Address: {record.Mac}</p>
-        <button onClick={deleteNode}>Delete</button>
-        <button onClick={() => getNodeData(record)}>Refresh</button>
-        <button onClick={editNode}>Edit Name</button>
-        <br />
-        
-        <h2>Node Sensors</h2>
-        {record.sensors.map((sensor) => (
-            displaySensorData(sensor)
-        ))}
+        <div className="NodeData">
+            <div className="NodeDetails">
+                <h2>Node Details </h2>
+                <p>Name: {record.Name}</p>
+                <p>MAC Address: {record.Mac}</p>
+                <button onClick={deleteNode}>Delete</button>
+                <button onClick={() => getNodeData(record)}>Refresh</button>
+                <button onClick={editNode}>Edit Name</button>
+                <br />
+                <br />
+                
+                <h2>Node Sensors</h2>
+                {record.sensors.map((sensor) => (
+                    displaySensorData(sensor)
+                ))}
 
-        <h2>Node Switches</h2>
-        {record.switches.map((nodeSwitch) => (
-            displaySwitchData(nodeSwitch)
-        ))}
-        </>
+                <br />
+                <h2>Node Switches</h2>
+                <p>PIN: <input onChange={pinChanged} type="password" id="requestPIN" /></p>
+                {record.switches.map((nodeSwitch) => (
+                    displaySwitchData(nodeSwitch)
+                ))}
+                <br />
+                <br />
+
+                <h2>Sensor Logs</h2>
+            </div>
+
+            {showTemp ? 
+            <>
+                <div className="SensorChart">
+                <TempFChart data={logs}></TempFChart>
+                </div>
+
+                <div className="SensorChart">
+                <TempCChart data={logs}></TempCChart>
+                </div>
+
+                <div className="SensorChart">
+                <HumidityChart data={logs}></HumidityChart>
+                </div>
+            </>
+            : null}
+
+            {showMagnetic ? 
+                <div className="SensorChart">
+                <IsClosedChart data={logs}></IsClosedChart>
+                </div>
+            : null}
+
+            {showMoisture ? 
+                <div className="SensorChart">
+                <MoistureChart data={logs}></MoistureChart>
+                </div>
+            : null}
+
+            {showResistor ? 
+                <div className="SensorChart">
+                <ResistorChart data={logs}></ResistorChart>
+                </div>
+            : null}
+
+        </div>
     )
 }
