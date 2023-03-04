@@ -34,13 +34,19 @@ const defaultNodeData: NodeDataModel = {
     nodeId: 0
 };
 
+interface refreshFunc {
+    (): null;
+}
+
 interface NodeDataProps {
     record: NodeVM
+    refreshNode: refreshFunc
 }
 
 export default function NodeData(props: NodeDataProps){
     const navigate = useNavigate();
     const record = props.record;
+    const refreshNode = props.refreshNode;
     const [data, setData] = useState<NodeDataModel>(defaultNodeData);
     const [pin, setPin] = useState("");
     const [logs, setLogs] = useState<FlatLog[]>([]);
@@ -54,6 +60,8 @@ export default function NodeData(props: NodeDataProps){
     }
 
     const getNodeData = (node: NodeVM) => {
+        refreshNode();
+
         axios.post(process.env.REACT_APP_API_URL + '/node/update/' + node.Id)
         .then(res=>{
             // there needs to be a slight delay before fetching the updated data
@@ -146,6 +154,20 @@ export default function NodeData(props: NodeDataProps){
         .catch(err=>alert(err.response.data))
     }
 
+    const updateNode = () => {
+        const requestBody = JSON.stringify({"pinCode" : pin});
+        const url = process.env.REACT_APP_API_URL + '/node/updateMode/' + record.Id;
+
+        axios.post(url, requestBody)
+        .then(res=>{
+            //give the node some time to update its IP
+            setTimeout(() => {
+                refreshNode();
+            }, 200);
+        })
+        .catch(err=>alert(err.response.data))
+    }
+
     const deleteNode = (event: React.MouseEvent<HTMLButtonElement>) => {
         if(window.confirm("Are you sure you want to delete this node?")){
             axios.delete(process.env.REACT_APP_API_URL + '/node/' + record.Id + '/delete')
@@ -203,7 +225,7 @@ export default function NodeData(props: NodeDataProps){
     useEffect(() => {
         getNodeData(record);
         getNodeLogs(record);
-    }, [record]);
+    }, []);
 
     return (
         <div className="NodeData">
@@ -211,9 +233,14 @@ export default function NodeData(props: NodeDataProps){
                 <h2>Node Details </h2>
                 <p>Name: {record.Name}</p>
                 <p>MAC Address: {record.Mac}</p>
+                {record.IpAddress ? 
+                <p>IP Address: {record.IpAddress}</p>
+                :null
+                }
                 <button onClick={deleteNode}>Delete</button>
                 <button onClick={() => getNodeData(record)}>Refresh</button>
                 <button onClick={editNode}>Edit Name</button>
+                <button onClick={updateNode}>Enter Update Mode</button>
                 <br />
                 <br />
                 

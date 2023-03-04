@@ -5,6 +5,7 @@ export interface NodeVM {
     Id: number,
     Name: string,
     Mac: string,
+    IpAddress: string,
     controlPointId: number,
     controlPointIp: string,
     controlPointName: string,

@@ -9,6 +9,7 @@ const defaultNodeRecord: NodeVM = {
     Id: 0,
     Name: "",
     Mac: "",
+    IpAddress: "",
     controlPointId: 0,
     controlPointIp: "",
     controlPointName: "",
@@ -21,7 +22,7 @@ export default function Node(){
     let idVar = id ? parseInt(id) : 0;
     const [record, setRecord] = useState<NodeVM>({...defaultNodeRecord, Id: idVar});
 
-    useEffect(() => {
+    const getNodeRecord = () => {
         axios.get(process.env.REACT_APP_API_URL + '/node/' + id)
         .then(res=>{
             if(!res.data.sensors){
@@ -33,11 +34,15 @@ export default function Node(){
             setRecord(res.data);
         })
         .catch(err=>console.log(err))
-    }, [id]);
+    }
+
+    useEffect(() => {
+        getNodeRecord();
+    }, []);
 
     return (
         <div className="App">
-        <NodeData record={record} />
+        <NodeData record={record} refreshNode={getNodeRecord} />
         </div>
     )
 }
