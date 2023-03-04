@@ -22,8 +22,11 @@ import CreateView from './Pages/View/CreateView.tsx';
 import EditView from './Pages/View/EditView.tsx';
 // @ts-ignore
 import ViewDetail from './Pages/View/ViewDetail.tsx';
+// @ts-ignore
+import version from './version.ts';
 
 export default function App(){
+  Object.freeze(version);
   return (
     <div className="GoHomeUIApp">
       <BrowserRouter>
