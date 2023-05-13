@@ -72,6 +72,6 @@ export function ViewSensor(props:SensorData){
     }, []);
 
     return (
-        <div>{displayData()}</div>
+        <div className="viewNodeSensorData">{displayData()}</div>
     )
 }

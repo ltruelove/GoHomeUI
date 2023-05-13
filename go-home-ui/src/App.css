@@ -39,3 +39,7 @@
   align-items: center;
   justify-content: left;
 }
+
+.viewNodeSensorData {
+  width: 210px;
+}

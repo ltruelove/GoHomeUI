@@ -34,19 +34,25 @@ const defaultNodeData: NodeDataModel = {
     nodeId: 0
 };
 
-interface refreshFunc {
-    (): null;
+interface NodeDataProps {
+    Id: number
 }
 
-interface NodeDataProps {
-    record: NodeVM
-    refreshNode: refreshFunc
+
+const defaultNodeRecord: NodeVM = {
+    Id: 0,
+    Name: "",
+    Mac: "",
+    IpAddress: "",
+    controlPointId: 0,
+    controlPointIp: "",
+    controlPointName: "",
+    sensors: [],
+    switches: []
 }
 
 export default function NodeData(props: NodeDataProps){
     const navigate = useNavigate();
-    const record = props.record;
-    const refreshNode = props.refreshNode;
     const [data, setData] = useState<NodeDataModel>(defaultNodeData);
     const [pin, setPin] = useState("");
     const [logs, setLogs] = useState<FlatLog[]>([]);
@@ -55,13 +61,32 @@ export default function NodeData(props: NodeDataProps){
     const [showResistor, setShowResistor] = useState(false);
     const [showMagnetic, setShowMagnetic] = useState(false);
 
+    let id = props.Id;
+    const [record, setRecord] = useState<NodeVM>({...defaultNodeRecord, Id: id});
+
+    const getNodeRecord = () => {
+        axios.get(process.env.REACT_APP_API_URL + '/node/' + id)
+        .then(res=>{
+            if(!res.data.sensors){
+                res.data.sensors = [];
+            }
+            if(!res.data.switches){
+                res.data.switches = [];
+            }
+
+            setRecord(res.data);
+
+            getNodeData(res.data);
+            getNodeLogs(res.data);
+        })
+        .catch(err=>console.log(err))
+    }
+
     const pinChanged = (event: React.ChangeEvent<HTMLInputElement>) =>{
         setPin(event.target.value);
     }
 
     const getNodeData = (node: NodeVM) => {
-        refreshNode();
-
         axios.post(process.env.REACT_APP_API_URL + '/node/update/' + node.Id)
         .then(res=>{
             // there needs to be a slight delay before fetching the updated data
@@ -162,7 +187,7 @@ export default function NodeData(props: NodeDataProps){
         .then(res=>{
             //give the node some time to update its IP
             setTimeout(() => {
-                refreshNode();
+                getNodeRecord();
             }, 200);
         })
         .catch(err=>alert(err.response.data))
@@ -223,9 +248,8 @@ export default function NodeData(props: NodeDataProps){
     }
 
     useEffect(() => {
-        getNodeData(record);
-        getNodeLogs(record);
-    }, []);
+        getNodeRecord();
+    }, [id]);
 
     return (
         <div className="NodeData">
@@ -234,7 +258,7 @@ export default function NodeData(props: NodeDataProps){
                 <p>Name: {record.Name}</p>
                 <p>MAC Address: {record.Mac}</p>
                 {record.IpAddress ? 
-                <p>IP Address: {record.IpAddress}</p>
+                <p>Most Recent IP Address: {record.IpAddress}</p>
                 :null
                 }
                 <button onClick={deleteNode}>Delete</button>
