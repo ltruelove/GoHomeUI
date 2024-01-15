@@ -2,12 +2,14 @@ import React,{useEffect, useState} from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { View } from "../../Models/View";
+// @ts-ignore
+import apiUrl from "../../index.tsx";
 
 export default function Views(){
     const [allViews, setAllViews] = useState<View[]>([]);
 
     const fetchAllViews = () => {
-        axios.get(process.env.REACT_APP_API_URL + '/view')
+        axios.get(apiUrl + '/view')
         .then(res=>{
             if(res.data){
                 setAllViews(res.data);
@@ -21,12 +23,11 @@ export default function Views(){
     }, []);
 
     const deleteClicked = (view: View) =>{
-        console.log(view.Id);
         if(!window.confirm("Are you sure you want to delete this view?")){
             return;
         }
 
-        axios.delete(process.env.REACT_APP_API_URL + '/view/' + view.Id)
+        axios.delete(apiUrl + '/view/' + view.Id)
         .then(() => fetchAllViews())
         .catch(err=>alert(err.response.data))
     }

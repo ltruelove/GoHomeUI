@@ -1,6 +1,8 @@
 import React, {useState} from "react";
 import axios from "axios";
 import { NodeSensorVM } from "../../Models/NodeSensorVM";
+// @ts-ignore
+import apiUrl from "../../index.tsx";
 
 export default function NodeSensor(props){
     props.sensor.label = "";
@@ -19,7 +21,7 @@ export default function NodeSensor(props){
             Name: sensor.label
         }
 
-        axios.post(process.env.REACT_APP_API_URL + '/view/node/sensor', sensorData)
+        axios.post(apiUrl + '/view/node/sensor', sensorData)
         .then(res=>{
             setId(res.data.Id);
         })
@@ -27,7 +29,7 @@ export default function NodeSensor(props){
     }
 
     const removeSelected = () => {
-        axios.delete(process.env.REACT_APP_API_URL + '/view/node/sensor/' + id)
+        axios.delete(apiUrl + '/view/node/sensor/' + id)
         .then(res=>{
             setId(0);
         })

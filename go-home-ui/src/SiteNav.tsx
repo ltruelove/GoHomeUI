@@ -1,6 +1,8 @@
 import React,{useEffect, useState} from "react";
 import axios from "axios";
 import { Link } from 'react-router-dom';
+// @ts-ignore
+import apiUrl from "./index.tsx";
 import { View } from "./Models/View";
 import { NodeVM } from "./Models/NodeVM";
 import Nav from 'react-bootstrap/Nav';
@@ -12,7 +14,7 @@ export default function SiteNav() {
     const [allNodes, setAllNodes] = useState<NodeVM[]>([]);
 
     const fetchAllViews = () => {
-        axios.get(process.env.REACT_APP_API_URL + '/view')
+        axios.get(apiUrl + '/view')
         .then(res=>{
             if(res.data){
                 setAllViews(res.data);
@@ -22,7 +24,7 @@ export default function SiteNav() {
     }
 
     const fetchAllNodes = () => {
-        axios.get(process.env.REACT_APP_API_URL + '/node')
+        axios.get(apiUrl + '/node')
         .then(res=>{
             if(res.data){
                 setAllNodes(res.data? res.data : []);

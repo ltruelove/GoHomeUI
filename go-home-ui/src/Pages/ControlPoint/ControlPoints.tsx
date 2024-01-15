@@ -2,12 +2,14 @@ import React,{useEffect, useState} from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { ControlPoint } from "../../Models/ControlPoint";
+// @ts-ignore
+import apiUrl from "../../index.tsx";
 
 export default function ControlPoints(){
     const [allPoints, setAllPoints] = useState<ControlPoint[]>([]);
 
     useEffect(() => {
-        axios.get(process.env.REACT_APP_API_URL + '/controlPoint')
+        axios.get(apiUrl + '/controlPoint')
         .then(res=>{
             if(res.data){
                 setAllPoints(res.data? res.data : []);

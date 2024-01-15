@@ -7,6 +7,8 @@ import { ViewVM } from "../../Models/ViewVM";
 import { ViewSwitch } from "./ViewSwitch.tsx";
 // @ts-ignore
 import { ViewSensor } from "./ViewSensor.tsx";
+// @ts-ignore
+import apiUrl from "../../index.tsx";
 import { NodeVM } from "../../Models/NodeVM";
 import { NodeSensorVM } from "../../Models/NodeSensorVM";
 
@@ -31,7 +33,7 @@ export default function ViewDetail(){
     }
     
     const fetchViewData = () => {
-        axios.get(process.env.REACT_APP_API_URL + '/view/' + id)
+        axios.get(apiUrl + '/view/' + id)
         .then(res=>{
             if(res.data){
 
@@ -61,7 +63,7 @@ export default function ViewDetail(){
             return;
         }
 
-        axios.get(process.env.REACT_APP_API_URL + '/node/' + nodeId)
+        axios.get(apiUrl + '/node/' + nodeId)
         .then(res=>{
             let node:NodeVM = res.data;
             let currentNodes = nodes;

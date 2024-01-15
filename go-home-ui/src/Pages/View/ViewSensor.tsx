@@ -5,6 +5,8 @@ import { NodeVM } from "../../Models/NodeVM";
 import { NodeDataModel } from "../../Models/NodeDataModel";
 // @ts-ignore
 import TempHumidity from "../../Components/View/TempHumidity.tsx";
+// @ts-ignore
+import apiUrl from "../../index.tsx";
 
 interface SensorData {
     nodeSensor: NodeSensorVM,
@@ -28,9 +30,9 @@ export function ViewSensor(props:SensorData){
     const [nodeData, setData] = useState<NodeDataModel>(defaultNodeData)
 
     const getNodeData = (node: NodeVM) => {
-        axios.post(process.env.REACT_APP_API_URL + '/node/update/' + node.Id)
+        axios.post(apiUrl + '/node/update/' + node.Id)
         .then(res=>{
-            axios.get(process.env.REACT_APP_API_URL + '/node/data/' + node.Id)
+            axios.get(apiUrl + '/node/data/' + node.Id)
             .then(res=>{
                 setData(res.data);
             })
