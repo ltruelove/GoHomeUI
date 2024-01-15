@@ -16,6 +16,8 @@ import ResistorChart from "./ResistorChart.tsx";
 import IsClosedChart from "./IsClosedChart.tsx";
 // @ts-ignore
 import { FlatLog } from "../../Models/FlatLog.tx";
+// @ts-ignore
+import apiUrl from "../../index.tsx";
 import { useNavigate } from "react-router-dom";
 import { NodeVM } from "../../Models/NodeVM";
 import { NodeDataModel } from "../../Models/NodeDataModel";
@@ -62,11 +64,11 @@ export default function NodeData(props: NodeDataProps){
     const getNodeData = (node: NodeVM) => {
         refreshNode();
 
-        axios.post(process.env.REACT_APP_API_URL + '/node/update/' + node.Id)
+        axios.post(apiUrl + '/node/update/' + node.Id)
         .then(res=>{
             // there needs to be a slight delay before fetching the updated data
             setTimeout(() => {
-                axios.get(process.env.REACT_APP_API_URL + '/node/data/' + node.Id)
+                axios.get(apiUrl + '/node/data/' + node.Id)
                 .then(res=>{
                     setData(res.data);
                 })
@@ -77,9 +79,8 @@ export default function NodeData(props: NodeDataProps){
     }
 
     const getNodeLogs = (node: NodeVM) => {
-        axios.get(process.env.REACT_APP_API_URL + '/node/logs/' + node.Id)
+        axios.get(apiUrl + '/node/logs/' + node.Id)
         .then(res=>{
-            console.log(res.data);
             let tempF: FlatLog[] = [];
 
             for(let i = 0; i < res.data.length; i++){
@@ -125,14 +126,13 @@ export default function NodeData(props: NodeDataProps){
             }
 
             setLogs(tempF);
-            console.log(tempF);
         })
         .catch(err=>console.log(err))
     }
 
     const toggleButton = (switchId: number) => {
         const requestBody = JSON.stringify({"pinCode" : pin});
-        const url = process.env.REACT_APP_API_URL + '/node/switch/toggle/' + switchId;
+        const url = apiUrl + '/node/switch/toggle/' + switchId;
 
         axios.post(url, requestBody)
         .then(res=>{
@@ -144,7 +144,7 @@ export default function NodeData(props: NodeDataProps){
 
     const pressMomentary = (switchId: number) => {
         const requestBody = JSON.stringify({"pinCode" : pin});
-        const url = process.env.REACT_APP_API_URL + '/node/switch/press/' + switchId;
+        const url = apiUrl + '/node/switch/press/' + switchId;
 
         axios.post(url, requestBody)
         .then(res=>{
@@ -156,7 +156,7 @@ export default function NodeData(props: NodeDataProps){
 
     const updateNode = () => {
         const requestBody = JSON.stringify({"pinCode" : pin});
-        const url = process.env.REACT_APP_API_URL + '/node/updateMode/' + record.Id;
+        const url = apiUrl + '/node/updateMode/' + record.Id;
 
         axios.post(url, requestBody)
         .then(res=>{
@@ -170,7 +170,7 @@ export default function NodeData(props: NodeDataProps){
 
     const deleteNode = (event: React.MouseEvent<HTMLButtonElement>) => {
         if(window.confirm("Are you sure you want to delete this node?")){
-            axios.delete(process.env.REACT_APP_API_URL + '/node/' + record.Id + '/delete')
+            axios.delete(apiUrl + '/node/' + record.Id + '/delete')
             .then(res=>{
                 navigate("/nodes");
             })

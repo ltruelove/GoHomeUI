@@ -1,6 +1,8 @@
 import React, {useState} from "react";
 import axios from "axios";
 import { NodeSwitchVM } from "../../Models/NodeSwitchVM";
+// @ts-ignore
+import apiUrl from "../../index.tsx";
 
 export default function NodeSwitch(props) {
     props.nodeSwitch.label = "";
@@ -19,7 +21,7 @@ export default function NodeSwitch(props) {
             Name: nodeSwitch.label
         }
 
-        axios.post(process.env.REACT_APP_API_URL + '/view/node/switch', nodeSwitchData)
+        axios.post(apiUrl + '/view/node/switch', nodeSwitchData)
         .then(res=>{
             setId(res.data.Id);
         })
@@ -27,7 +29,7 @@ export default function NodeSwitch(props) {
     }
 
     const removeSelected = () => {
-        axios.delete(process.env.REACT_APP_API_URL + '/view/node/switch/' + id)
+        axios.delete(apiUrl + '/view/node/switch/' + id)
         .then(res=>{
             setId(0);
         })

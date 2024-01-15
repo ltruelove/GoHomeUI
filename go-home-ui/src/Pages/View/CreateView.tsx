@@ -2,6 +2,8 @@ import React,{useState} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { View } from "../../Models/View";
+// @ts-ignore
+import apiUrl from "../../index.tsx";
 
 export default function CreateView(props){
     const navigate = useNavigate();
@@ -12,7 +14,7 @@ export default function CreateView(props){
     }
 
     const saveClicked = () => {
-        axios.post(process.env.REACT_APP_API_URL + '/view', view)
+        axios.post(apiUrl + '/view', view)
         .then(res=>{
             navigate("/views");
         })

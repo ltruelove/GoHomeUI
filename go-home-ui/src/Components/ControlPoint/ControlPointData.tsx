@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 // @ts-ignore
 import NodeListItem from "../Node/NodeListItem.tsx";
+// @ts-ignore
+import apiUrl from "../../index.tsx";
 import { ControlPoint } from "../../Models/ControlPoint";
 import { ControlPointNode } from "../../Models/ControlPointNode";
 
@@ -25,7 +27,7 @@ export default function ControlPointData(props: ControlPointDataProps){
 
     const deleteControlPoint = (event: React.MouseEvent<HTMLButtonElement>) => {
         if(window.confirm("Are you sure you want to delete this control point?")){
-            axios.delete(process.env.REACT_APP_API_URL + '/controlPoint/' + recordId + '/delete')
+            axios.delete(apiUrl + '/controlPoint/' + recordId + '/delete')
             .then(res=>{
                 navigate("/controlPoints");
             })
@@ -34,7 +36,7 @@ export default function ControlPointData(props: ControlPointDataProps){
     }
 
     const getControlPointData = () => {
-        axios.get(process.env.REACT_APP_API_URL + '/controlPoint/' + recordId)
+        axios.get(apiUrl + '/controlPoint/' + recordId)
         .then(res=>{
             setRecord(res.data);
         })
@@ -42,7 +44,7 @@ export default function ControlPointData(props: ControlPointDataProps){
     }
 
     const getAllNodes = () => {
-        axios.get(process.env.REACT_APP_API_URL + '/controlPoint/nodes/' + recordId)
+        axios.get(apiUrl + '/controlPoint/nodes/' + recordId)
         .then(res=>{
             if(res.data){
                 setAllNodes(res.data);

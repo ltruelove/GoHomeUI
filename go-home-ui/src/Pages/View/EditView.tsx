@@ -7,6 +7,8 @@ import ReactModal from "react-modal";
 import NodeSensorList from "../../Components/Node/NodeSensorList.tsx";
 // @ts-ignore
 import NodeSwitchList from "../../Components/Node/NodeSwitchList.tsx";
+// @ts-ignore
+import apiUrl from "../../index.tsx";
 import { ViewVM } from "../../Models/ViewVM";
 import { NodeVM } from "../../Models/NodeVM";
 
@@ -49,7 +51,7 @@ export default function EditView(){
     }
     
     const fetchAllNodes = () => {
-        axios.get(process.env.REACT_APP_API_URL + '/node')
+        axios.get(apiUrl + '/node')
         .then(res=>{
             if(res.data){
                 setAllNodes(res.data);
@@ -59,7 +61,7 @@ export default function EditView(){
     }
 
     const fetchViewData = () => {
-        axios.get(process.env.REACT_APP_API_URL + '/view/' + id)
+        axios.get(apiUrl + '/view/' + id)
         .then(res=>{
             if(res.data){
                 if(res.data.sensors === null){
@@ -75,7 +77,7 @@ export default function EditView(){
     }
 
     const removeSelectedSensor = (sensorId: number) => {
-        axios.delete(process.env.REACT_APP_API_URL + '/view/node/sensor/' + sensorId)
+        axios.delete(apiUrl + '/view/node/sensor/' + sensorId)
         .then(res=>{
             fetchViewData();
         })
@@ -83,7 +85,7 @@ export default function EditView(){
     }
 
     const removeSelectedSwitch = (switchId: number) => {
-        axios.delete(process.env.REACT_APP_API_URL + '/view/node/switch/' + switchId)
+        axios.delete(apiUrl + '/view/node/switch/' + switchId)
         .then(res=>{
             fetchViewData();
         })
@@ -96,7 +98,7 @@ export default function EditView(){
             Name: view.Name
         }
 
-        axios.put(process.env.REACT_APP_API_URL + '/view', thisView)
+        axios.put(apiUrl + '/view', thisView)
         .then(res=>{
             fetchViewData();
         })

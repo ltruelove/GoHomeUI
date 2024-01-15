@@ -1,6 +1,8 @@
 import React,{useState} from "react";
 import axios from "axios";
 import { NodeSwitchVM } from "../../Models/NodeSwitchVM";
+// @ts-ignore
+import apiUrl from "../../index.tsx";
 
 interface SwitchData {
     nodeSwitch: NodeSwitchVM,
@@ -25,7 +27,7 @@ export function ViewSwitch(props:SwitchData){
 
     const pressMomentary = (switchId: number) => {
         const requestBody = JSON.stringify({"pinCode" : pin});
-        const url = process.env.REACT_APP_API_URL + '/node/switch/press/' + switchId;
+        const url = apiUrl + '/node/switch/press/' + switchId;
 
         axios.post(url, requestBody)
         .then(res=>{
@@ -35,7 +37,7 @@ export function ViewSwitch(props:SwitchData){
 
     const toggleButton = (switchId: number) => {
         const requestBody = JSON.stringify({"pinCode" : pin});
-        const url = process.env.REACT_APP_API_URL + '/node/switch/toggle/' + switchId;
+        const url = apiUrl + '/node/switch/toggle/' + switchId;
 
         axios.post(url, requestBody)
         .then(res=>{

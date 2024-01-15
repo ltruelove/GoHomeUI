@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom";
 import { NodeVM } from "../../Models/NodeVM";
 // @ts-ignore
 import NodeData from "../../Components/Node/NodeData.tsx";
+// @ts-ignore
+import apiUrl from "../../index.tsx";
 
 const defaultNodeRecord: NodeVM = {
     Id: 0,
@@ -23,7 +25,7 @@ export default function Node(){
     const [record, setRecord] = useState<NodeVM>({...defaultNodeRecord, Id: idVar});
 
     const getNodeRecord = () => {
-        axios.get(process.env.REACT_APP_API_URL + '/node/' + id)
+        axios.get(apiUrl + '/node/' + id)
         .then(res=>{
             if(!res.data.sensors){
                 res.data.sensors = [];
