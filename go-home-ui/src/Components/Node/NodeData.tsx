@@ -89,18 +89,20 @@ export default function NodeData(props: NodeDataProps){
     }
 
     const getNodeData = (node: NodeVM) => {
-        refreshNode();
-
-        axios.post(apiUrl + '/node/update/' + node.Id)
-        .then(res=>{
-            // there needs to be a slight delay before fetching the updated data
-            setTimeout(() => {
                 axios.get(apiUrl + '/node/data/' + node.Id)
                 .then(res=>{
                     setData(res.data);
                 })
                 .catch(err=>console.log(err))
-            }, 100);
+    }
+
+    const refreshData = () => {
+        axios.post(apiUrl + '/node/update/' + record.Id)
+        .then(res=>{
+            // there needs to be a slight delay before fetching the updated data
+            setTimeout(() => {
+                getNodeRecord();
+            }, 50);
         })
         .catch(err=>console.log(err))
     }
@@ -264,7 +266,7 @@ export default function NodeData(props: NodeDataProps){
                 :null
                 }
                 <button onClick={deleteNode}>Delete</button>
-                <button onClick={() => getNodeData(record)}>Refresh</button>
+                <button onClick={() => refreshData()}>Refresh</button>
                 <button onClick={editNode}>Edit Name</button>
                 <button onClick={updateNode}>Enter Update Mode</button>
                 <br />

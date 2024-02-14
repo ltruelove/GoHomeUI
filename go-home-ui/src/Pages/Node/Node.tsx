@@ -1,21 +1,10 @@
-import React from "react";
+import React,{useEffect} from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 // @ts-ignore
 import NodeData from "../../Components/Node/NodeData.tsx";
 // @ts-ignore
 import apiUrl from "../../index.tsx";
-
-const defaultNodeRecord: NodeVM = {
-    Id: 0,
-    Name: "",
-    Mac: "",
-    IpAddress: "",
-    controlPointId: 0,
-    controlPointIp: "",
-    controlPointName: "",
-    sensors: [],
-    switches: []
-}
 
 export default function Node(){
     let { id } = useParams();
@@ -30,7 +19,6 @@ export default function Node(){
             if(!res.data.switches){
                 res.data.switches = [];
             }
-            setRecord(res.data);
         })
         .catch(err=>console.log(err))
     }
