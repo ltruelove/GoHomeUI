@@ -67,7 +67,7 @@ export default function NodeData(props: NodeDataProps){
     const [record, setRecord] = useState<NodeVM>({...defaultNodeRecord, Id: id});
 
     const getNodeRecord = () => {
-        axios.get(process.env.REACT_APP_API_URL + '/node/' + id)
+        axios.get(apiUrl + '/node/' + id)
         .then(res=>{
             if(!res.data.sensors){
                 res.data.sensors = [];
