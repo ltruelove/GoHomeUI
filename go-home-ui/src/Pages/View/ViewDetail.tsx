@@ -1,8 +1,6 @@
-import React,{useEffect, useState} from "react";
-import axios from "axios";
+import React,{useState} from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { ViewVM } from "../../Models/ViewVM";
 // @ts-ignore
 import { ViewSwitch } from "./ViewSwitch.tsx";
 // @ts-ignore
@@ -11,75 +9,37 @@ import { ViewSensor } from "./ViewSensor.tsx";
 import apiUrl from "../../index.tsx";
 import { NodeVM } from "../../Models/NodeVM";
 import { NodeSensorVM } from "../../Models/NodeSensorVM";
-
-const defaultViewData: ViewVM = {
-    Id: 0,
-    Name: "",
-    sensors: [],
-    switches: [],
-}
+import useApi from "./useApi.ts";
+import useViewApi from "./ViewAPI.ts";
 
 export default function ViewDetail(){
-    const [view, setView] = useState<ViewVM>(defaultViewData);
     const [pin, setPin] = useState("");
-    const [nodes, setNodes] = useState<NodeVM[]>([]);
-    const [nodeIdList, setNodeIdList] = useState<number[]>([]);
-    const [showSensors, setShowSensors] = useState(false);
+    const { id } = useParams();
+    const getViewRequest = {url: apiUrl + '/view/' + id};
 
-    let { id } = useParams();
+    const {
+        useGetNodeIds: getNodeIds,
+        useGetNodes: getNodes,
+    } = useViewApi(apiUrl);
+
+    const viewData = useApi(getViewRequest);
+    const nodeIdList: number[] = getNodeIds(viewData.data);
+    const nodes: NodeVM[] = getNodes(nodeIdList);
+
+    /*
+    const viewData = getView({url: apiUrl + '/view/' + id}).data;
+    const nodeIdList = getNodeIds(viewData);
+    const nodes = getNodes(nodeIdList);
+    */
 
     const pinChanged = (event: React.ChangeEvent<HTMLInputElement>) =>{
         setPin(event.target.value);
     }
-    
-    const fetchViewData = () => {
-        axios.get(apiUrl + '/view/' + id)
-        .then(res=>{
-            if(res.data){
 
-                if(res.data.sensors === null){
-                    res.data.sensors = [];
-                }
-                if(res.data.switches === null){
-                    res.data.switches = [];
-                }
+    const getSensorNode = (sensor:NodeSensorVM, nodes:NodeVM[]): NodeVM | null => {
+        console.log(nodes);
+        let foundNode: NodeVM | null = null;
 
-                setView(res.data);
-            }
-        })
-        .catch(err=>console.log(err))
-    }
-
-    const getNode = (nodeId:number) =>{
-        let exists = false;
-
-        nodes.forEach((node) => {
-            if(node.Id === nodeId){
-                exists = true;
-            }
-        })
-        
-        if(exists){
-            return;
-        }
-
-        axios.get(apiUrl + '/node/' + nodeId)
-        .then(res=>{
-            let node:NodeVM = res.data;
-            let currentNodes = nodes;
-
-            currentNodes.push(node);
-            setNodes(nodes);
-
-            if(nodeIdList.length === nodes.length){
-                setShowSensors(true);
-            }
-        })
-        .catch(err=>console.log(err))
-    }
-
-    const getSensorNode = (sensor:NodeSensorVM, nodes:NodeVM[]) => {
-        let foundNode = {};
         nodes.forEach((node) => {
             if(node.Id === sensor.NodeId){
                 foundNode = node;
@@ -89,72 +49,40 @@ export default function ViewDetail(){
         return foundNode;
     }
 
-    const fetchUsedNodes = () => {
-        let nodeIds:number[] = [];
-
-        view.sensors.forEach((sensor) => {
-            if(!nodeIds.includes(sensor.NodeId)){
-                nodeIds.push(sensor.NodeId);
-            }
-        })
-
-        view.switches.forEach((nodeSwitch) => {
-            if(!nodeIds.includes(nodeSwitch.NodeId)){
-                nodeIds.push(nodeSwitch.NodeId);
-            }
-        })
-
-        setNodeIdList(nodeIds);
-    }
-
-    useEffect(() => {
-        fetchViewData();
-    }, [id]);
-
-    useEffect(() => {
-        fetchViewData();
-    }, []);
-
-    useEffect(() => {
-        if(nodes.length < 1){
-            fetchUsedNodes()
-        }
-    }, [view]);
-
-    useEffect(() => {
-        nodeIdList.forEach((id) => {
-            getNode(id);
-        });
-    }, [nodeIdList])
-
     return (
         <div className="ViewDetail">
-            <h2>{view.Name}</h2>
-            <br />
-            <Link className="App-link" to={`/view/edit/${id}`}>Edit</Link>
-            <br />
-            { showSensors && view.sensors.length > 0 ? 
+            {viewData.loading && <div>Loading...</div>}
+            {!viewData.loading && (
             <>
-            <h2>Sensors</h2>
-            <br />
-            <br />
-            {view.sensors.map((sensor) => {
-                return (
-                    <ViewSensor key={sensor.Id} nodeSensor={sensor} node={getSensorNode(sensor,nodes)} />
-                )
-            })}
-            </> : "" }
+                <h2>{viewData.data.Name}</h2>
+                <br />
+                <Link className="App-link" to={`/view/edit/${id}`}>Edit</Link>
+                <br />
+                { viewData.data.sensors && viewData.data.sensors.length > 0 ? 
+                <>
+                <h2>Sensors</h2>
+                <br />
+                <br />
+                {viewData.data.sensors.map((sensor) => {
+                    return (
+                        <ViewSensor key={sensor.Id} nodeSensor={sensor} node={getSensorNode(sensor,nodes)} />
+                    )
+                })}
+                </> : "" }
 
-            {view.switches.length > 0 ? 
-            <>
-            <h2>Switches</h2>
-            <p>PIN: <input onChange={pinChanged} type="password" id="requestPIN" /></p>
-            <br />
-            <br />
-            {view.switches.map((nodeSwitch) => (
-                <ViewSwitch key={nodeSwitch.Id} nodeSwitch={nodeSwitch} pin={pin} />
-            ))}
-            </> : ""}
+                {viewData.data.switches && viewData.data.switches.length > 0 ? 
+                <>
+                <h2>Switches</h2>
+                <p>PIN: <input onChange={pinChanged} type="password" id="requestPIN" /></p>
+                <br />
+                <br />
+                {viewData.data.switches.map((nodeSwitch) => (
+                    <ViewSwitch key={nodeSwitch.Id} nodeSwitch={nodeSwitch} pin={pin} />
+                ))}
+                </> : ""}
+            </>
+            )
+        }
         </div>
     )
 }

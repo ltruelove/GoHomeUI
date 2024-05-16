@@ -6,7 +6,7 @@ import apiUrl from "../../index.tsx";
 
 interface SwitchData {
     nodeSwitch: NodeSwitchVM,
-    pin: number
+    pin: string
 }
 
 export function ViewSwitch(props:SwitchData){

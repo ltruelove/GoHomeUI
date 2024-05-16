@@ -10,7 +10,7 @@ import apiUrl from "../../index.tsx";
 
 interface SensorData {
     nodeSensor: NodeSensorVM,
-    node: NodeVM
+    node: NodeVM | null
 }
 
 const defaultNodeData: NodeDataModel = {
@@ -29,7 +29,11 @@ export function ViewSensor(props:SensorData){
     const node = props.node;
     const [nodeData, setData] = useState<NodeDataModel>(defaultNodeData)
 
-    const getNodeData = (node: NodeVM) => {
+    const getNodeData = (node: NodeVM | null) => {
+        if(!node){
+            return;
+        }
+
         axios.post(apiUrl + '/node/update/' + node.Id)
         .then(res=>{
             axios.get(apiUrl + '/node/data/' + node.Id)
@@ -71,7 +75,7 @@ export function ViewSensor(props:SensorData){
 
     useEffect(() => {
         getNodeData(node);
-    }, []);
+    }, [node]);
 
     return (
         <div className="viewNodeSensorData">{displayData()}</div>
