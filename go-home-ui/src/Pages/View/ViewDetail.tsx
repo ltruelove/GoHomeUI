@@ -37,49 +37,41 @@ export default function ViewDetail(){
     }
 
     const getSensorNode = (sensor:NodeSensorVM, nodes:NodeVM[]): NodeVM | null => {
-        console.log(nodes);
-        let foundNode: NodeVM | null = null;
-
-        nodes.forEach((node) => {
-            if(node.Id === sensor.NodeId){
-                foundNode = node;
-            }
-        })
-
-        return foundNode;
+        return nodes.find(node => node.Id === sensor.NodeId) || null;
     }
 
     return (
         <div className="ViewDetail">
-            {viewData.loading && <div>Loading...</div>}
-            {!viewData.loading && (
+            {viewData.loading ? <div>Loading...</div> : (
             <>
                 <h2>{viewData.data.Name}</h2>
                 <br />
                 <Link className="App-link" to={`/view/edit/${id}`}>Edit</Link>
                 <br />
-                { viewData.data.sensors && viewData.data.sensors.length > 0 ? 
-                <>
-                <h2>Sensors</h2>
-                <br />
-                <br />
-                {viewData.data.sensors.map((sensor) => {
-                    return (
-                        <ViewSensor key={sensor.Id} nodeSensor={sensor} node={getSensorNode(sensor,nodes)} />
-                    )
-                })}
-                </> : "" }
+                { viewData.data.sensors && viewData.data.sensors.length > 0 && ( 
+                    <>
+                        <h2>Sensors</h2>
+                        <br />
+                        <br />
+                        {viewData.data.sensors.map((sensor) => {
+                            return (
+                                <ViewSensor key={sensor.Id} nodeSensor={sensor} node={getSensorNode(sensor,nodes)} />
+                            )
+                        })}
+                    </>
+                )}
 
-                {viewData.data.switches && viewData.data.switches.length > 0 ? 
-                <>
-                <h2>Switches</h2>
-                <p>PIN: <input onChange={pinChanged} type="password" id="requestPIN" /></p>
-                <br />
-                <br />
-                {viewData.data.switches.map((nodeSwitch) => (
-                    <ViewSwitch key={nodeSwitch.Id} nodeSwitch={nodeSwitch} pin={pin} />
-                ))}
-                </> : ""}
+                {viewData.data.switches && viewData.data.switches.length > 0 && (
+                    <>
+                        <h2>Switches</h2>
+                        <p>PIN: <input onChange={pinChanged} type="password" id="requestPIN" /></p>
+                        <br />
+                        <br />
+                        {viewData.data.switches.map((nodeSwitch) => (
+                            <ViewSwitch key={nodeSwitch.Id} nodeSwitch={nodeSwitch} pin={pin} />
+                        ))}
+                    </>
+                )}
             </>
             )
         }
