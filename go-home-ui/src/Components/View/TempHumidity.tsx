@@ -7,7 +7,7 @@ export default function TempHumidity(props){
     return(
         <>
             <p><strong>{name}</strong></p>
-            <p>Fahrenheit: <strong>{data.TemperatureF.toFixed(2)}&#176;</strong> - Celcius: <strong>{data.TemperatureC.toFixed(2)}&#176;</strong> - Humidity: <strong>{data.Humidity}&#37;</strong></p>
+            <p>Fahrenheit: <strong>{data.TemperatureF ? data.TemperatureF.toFixed(2) : 'None'}&#176;</strong> - Celcius: <strong>{data.TemperatureC ? data.TemperatureC.toFixed(2) : 'None'}&#176;</strong> - Humidity: <strong>{data.Humidity? data.Humidity : 'None'}&#37;</strong></p>
         </>
     )
 }
